@@ -1,0 +1,229 @@
+"use client"
+
+import type React from "react"
+import { useState, useRef, useEffect } from "react"
+import { MoreVertical, Send, Bot, Check, Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useUser } from "@/lib/user-context"
+import type { ChatMessage } from "@/lib/types"
+
+const quickPrompts = ["Find dinner spot", "Book yacht", "Plan day trip", "Best diving", "Hotel deals"]
+
+export function ConciergeChat() {
+  const { user } = useUser()
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      id: "welcome",
+      role: "assistant",
+      content: `Welcome to Subic.Life, ${user?.name?.split(" ")[0] || "Guest"}! I'm your personal concierge. How can I help you explore Subic Bay today?`,
+      timestamp: new Date(),
+    },
+  ])
+  const [input, setInput] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [confirmedBooking, setConfirmedBooking] = useState<string | null>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  const handleSend = async (message: string) => {
+    if (!message.trim() || isLoading) return
+
+    const userMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: message,
+      timestamp: new Date(),
+    }
+
+    setMessages((prev) => [...prev, userMessage])
+    setInput("")
+    setIsLoading(true)
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      })
+
+      const data = await response.json()
+
+      const assistantMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: data.content,
+        timestamp: new Date(),
+        bookingCard: data.bookingCard,
+      }
+
+      setMessages((prev) => [...prev, assistantMessage])
+    } catch (error) {
+      const errorMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "I apologize, but I'm having trouble connecting right now. Please try again in a moment.",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleConfirmBooking = (messageId: string) => {
+    setConfirmedBooking(messageId)
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    handleSend(input)
+  }
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-80px)]">
+      {/* Header */}
+      <div className="bg-white shadow-sm sticky top-0 z-10">
+        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-bold text-slate-900">Concierge</h1>
+            <span className="flex items-center gap-1 text-xs text-green-600">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              Online
+            </span>
+          </div>
+          <button className="p-2 rounded-full hover:bg-slate-100">
+            <MoreVertical className="w-5 h-5 text-slate-600" />
+          </button>
+        </div>
+      </div>
+
+      {/* Quick Prompts */}
+      <div className="bg-white border-b">
+        <div className="max-w-md mx-auto px-4 py-3">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: "none" }}>
+            {quickPrompts.map((prompt) => (
+              <button
+                key={prompt}
+                onClick={() => handleSend(prompt)}
+                className="flex-shrink-0 px-4 py-2 bg-slate-100 rounded-full text-sm text-slate-700 hover:bg-slate-200 transition-colors"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-md mx-auto px-4 py-4 space-y-4">
+          {messages.map((message) => (
+            <div key={message.id} className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+              {message.role === "assistant" && (
+                <Avatar className="w-8 h-8 flex-shrink-0">
+                  <AvatarFallback className="bg-[#0A74DA] text-white">
+                    <Bot className="w-4 h-4" />
+                  </AvatarFallback>
+                </Avatar>
+              )}
+
+              <div className={`max-w-[80%] ${message.role === "user" ? "order-first" : ""}`}>
+                <div
+                  className={`rounded-2xl px-4 py-3 ${
+                    message.role === "user" ? "bg-blue-100 text-slate-900" : "bg-white shadow-sm border text-slate-800"
+                  }`}
+                >
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                </div>
+
+                {/* Booking Card */}
+                {message.bookingCard && (
+                  <Card className="mt-3 shadow-md border-0 overflow-hidden">
+                    <div className="h-24 relative">
+                      <img
+                        src={message.bookingCard.image || "/placeholder.svg"}
+                        alt={message.bookingCard.venue}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <CardContent className="p-3">
+                      <h4 className="font-semibold text-slate-900">{message.bookingCard.venue}</h4>
+                      <div className="flex items-center gap-4 text-sm text-slate-600 mt-1">
+                        <span>{message.bookingCard.time}</span>
+                        <span>{message.bookingCard.guests} guests</span>
+                        <span className="text-green-600 font-medium">{message.bookingCard.discount}% off</span>
+                      </div>
+                      {confirmedBooking === message.id ? (
+                        <div className="mt-3 flex items-center justify-center gap-2 py-2 bg-green-100 rounded-lg">
+                          <Check className="w-4 h-4 text-green-600" />
+                          <span className="text-sm font-medium text-green-700">Booking Confirmed!</span>
+                        </div>
+                      ) : (
+                        <Button
+                          onClick={() => handleConfirmBooking(message.id)}
+                          className="w-full mt-3 bg-green-600 hover:bg-green-700"
+                        >
+                          Confirm Booking
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                <p className="text-xs text-slate-400 mt-1 px-1">
+                  {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {isLoading && (
+            <div className="flex gap-3 justify-start">
+              <Avatar className="w-8 h-8 flex-shrink-0">
+                <AvatarFallback className="bg-[#0A74DA] text-white">
+                  <Bot className="w-4 h-4" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="bg-white shadow-sm border rounded-2xl px-4 py-3">
+                <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+
+      {/* Input */}
+      <div className="bg-white border-t">
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto px-4 py-3 flex gap-2">
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask your concierge..."
+            className="flex-1 h-11"
+            disabled={isLoading}
+          />
+          <Button
+            type="submit"
+            size="icon"
+            disabled={!input.trim() || isLoading}
+            className="h-11 w-11 bg-[#0A74DA] hover:bg-[#0960b5]"
+          >
+            <Send className="w-4 h-4" />
+          </Button>
+        </form>
+      </div>
+    </div>
+  )
+}
