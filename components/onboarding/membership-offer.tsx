@@ -2,10 +2,8 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Check, Shield, Gift, Percent, Headphones, Anchor, Hotel, Star, Crown, Sparkles } from "lucide-react"
+import { Check, Shield, Gift, Percent, Headphones, Anchor, Star, Sparkles, ArrowRight, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { PaymentModal } from "@/components/payment/payment-modal"
 import { useUser } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
@@ -14,51 +12,59 @@ interface TierInfo {
   id: "basic" | "premium" | "elite"
   name: string
   price: number
+  copy: string
+  tagline: string
   accentColor: string
-  benefits: { icon: React.ReactNode; text: string }[]
   recommended?: boolean
-  description: string
+  image?: string
+  mainBenefits: string[]
 }
 
 const tiers: TierInfo[] = [
   {
     id: "basic",
-    name: "BASIC",
-    price: 500,
-    accentColor: "#16a34a",
-    description: "Essential perks for the casual explorer.",
-    benefits: [
-      { icon: <Shield className="w-4 h-4" />, text: "₱100k Travel Insurance" },
-      { icon: <Percent className="w-4 h-4" />, text: "10% Partner Discounts" },
-      { icon: <Headphones className="w-4 h-4" />, text: "Standard Concierge" },
-    ],
+    name: "Basic",
+    price: 550,
+    copy: "Elevate Your Weekend",
+    tagline: "The essential Subic experience",
+    accentColor: "#135bec",
+    image: "/subic-bay-aerial-view-blue-ocean-tropical.jpg",
+    mainBenefits: [
+      "₱100k Accident Insurance",
+      "10% Partner Discounts",
+      "Digital Membership Card"
+    ]
   },
   {
     id: "premium",
-    name: "PREMIUM",
-    price: 5000,
-    accentColor: "#D97706", // Gold
+    name: "Premium",
+    price: 5500,
+    copy: "The Full Experience",
+    tagline: "Our most popular choice",
+    accentColor: "#D97706",
     recommended: true,
-    description: "The most popular choice for frequent visitors.",
-    benefits: [
-      { icon: <Shield className="w-4 h-4" />, text: "₱500k Premium Insurance" },
-      { icon: <Hotel className="w-4 h-4" />, text: "1 Free Hotel Night Stay" },
-      { icon: <Percent className="w-4 h-4" />, text: "20% VIP Discounts" },
-      { icon: <Headphones className="w-4 h-4" />, text: "24/7 Priority Support" },
-    ],
+    image: "/luxury-resort-suite-ocean-view-sunset.jpg",
+    mainBenefits: [
+      "₱500k Accident Insurance",
+      "15% Partner Discounts",
+      "24/7 AI Concierge & Booking",
+      "Exclusive Event Access"
+    ]
   },
   {
     id: "elite",
-    name: "ELITE",
-    price: 25000,
-    accentColor: "#0A74DA",
-    description: "Ultimate luxury and exclusive privileges.",
-    benefits: [
-      { icon: <Shield className="w-4 h-4" />, text: "₱1M Elite Insurance" },
-      { icon: <Anchor className="w-4 h-4" />, text: "Private Yacht Experience (3hrs)" },
-      { icon: <Hotel className="w-4 h-4" />, text: "Luxury Hotel Night Stay" },
-      { icon: <Gift className="w-4 h-4" />, text: "Dedicated Personal Concierge" },
-    ],
+    name: "Elite",
+    price: 25500,
+    copy: "Limitless Luxury",
+    tagline: "For the discerning explorer",
+    accentColor: "#111318",
+    image: "/luxury-yacht-cruise-sunset-subic-bay.jpg",
+    mainBenefits: [
+      "₱1M Accident Insurance",
+      "Private Yacht Cruise (20pax)",
+      "20% Partner Discounts",
+      "Dedicated Personal Concierge"
+    ]
   },
 ]
 
@@ -78,135 +84,128 @@ export function MembershipOffer() {
   }
 
   return (
-    <div className="min-h-[100dvh] flex flex-col relative overflow-hidden bg-slate-50">
-       {/* Background Glows (Matching Onboarding) */}
-       <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[60%] bg-[#135bec]/20 rounded-full blur-[120px] pointer-events-none mix-blend-multiply" />
-      <div className="absolute top-[10%] right-[-15%] w-[70%] h-[50%] bg-teal-300/30 rounded-full blur-[100px] pointer-events-none mix-blend-multiply" />
-      <div className="absolute bottom-[-15%] right-[-10%] w-[80%] h-[60%] bg-orange-300/30 rounded-full blur-[120px] pointer-events-none mix-blend-multiply" />
+    <div className="min-h-screen bg-[#F9FAFB] flex flex-col relative overflow-hidden font-sans">
+      {/* "Northern Lights" Background Effect */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#135bec]/10 blur-[120px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[20%] right-[-10%] w-[60%] h-[60%] bg-[#D97706]/5 blur-[120px] rounded-full" />
+        <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-teal-500/10 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
       
-      {/* Content */}
-      <div className="flex-1 flex flex-col relative z-10 p-6 overflow-y-auto no-scrollbar">
-        <div className="max-w-md mx-auto w-full space-y-8 pt-4 pb-24">
-          
-          <div className="text-center space-y-3">
-            <Badge variant="outline" className="bg-white/50 backdrop-blur-sm border-slate-200 text-slate-600 mb-2">
-              Membership Tiers
-            </Badge>
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900">Experience Subic<br/>Like a <span className="text-[#135bec]">VIP</span></h1>
-            <p className="text-slate-500 text-base leading-relaxed max-w-[300px] mx-auto">
-              Unlock exclusive privileges, priority access, and peace of mind for your travels.
-            </p>
+      {/* Main Content Area */}
+      <div className="relative z-10 flex-1 flex flex-col p-6 pb-32 max-w-lg mx-auto w-full">
+        
+        {/* Header Section */}
+        <header className="pt-8 pb-10 text-center space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/50 backdrop-blur-md border border-white/20 shadow-sm mb-2">
+            <Sparkles className="w-3.5 h-3.5 text-[#D97706]" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Membership Tiers</span>
           </div>
+          <h1 className="text-4xl font-extrabold tracking-tight text-[#111318] leading-[1.1]">
+            Experience Subic <br/>
+            <span className="text-[#135bec]">Without Limits.</span>
+          </h1>
+          <p className="text-gray-500 text-sm font-medium max-w-[280px] mx-auto leading-relaxed">
+            Select a plan to unlock premium benefits and exclusive local access.
+          </p>
+        </header>
 
-          <div className="space-y-6">
-            {tiers.map((tier) => (
-              <Card
-                key={tier.id}
-                className={cn(
-                  "relative overflow-hidden transition-all duration-300 border-0",
-                  tier.recommended 
-                    ? "bg-gradient-to-br from-[#1f2937] to-[#111827] text-white shadow-xl shadow-slate-900/10 scale-[1.02]" 
-                    : "bg-white/80 backdrop-blur-md shadow-sm hover:shadow-md text-slate-900"
-                )}
-              >
+        {/* Tiers Scrollable Rail */}
+        <div className="space-y-8">
+          {tiers.map((tier) => (
+            <div 
+              key={tier.id}
+              onClick={() => handleSelectTier(tier)}
+              className={cn(
+                "group relative overflow-hidden rounded-[2rem] transition-all duration-500 cursor-pointer active:scale-[0.98]",
+                "bg-white border border-white shadow-premium",
+                tier.recommended && "ring-2 ring-[#D97706]/20 border-[#D97706]/10"
+              )}
+            >
+              {/* Card Image Wrapper */}
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src={tier.image} 
+                  alt={tier.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
+                
+                {/* Floating Price Tag */}
+                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm border border-white/50">
+                  <span className="text-lg font-bold text-[#111318]">₱{tier.price.toLocaleString()}</span>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-1">/yr</span>
+                </div>
+
+                {/* Recommended Badge */}
                 {tier.recommended && (
-                  <div className="absolute top-0 right-0 p-3">
-                    <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white border-0 font-bold tracking-wide shadow-lg">
-                      BEST VALUE
-                    </Badge>
+                  <div className="absolute top-4 left-4 bg-[#D97706] text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg shadow-orange-500/20 tracking-widest uppercase flex items-center gap-1.5">
+                    <Star className="w-3 h-3 fill-white" />
+                    Most Popular
                   </div>
                 )}
+              </div>
 
-                <CardContent className="p-6">
-                  {/* Header */}
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      {tier.id === 'elite' && <Crown className="w-5 h-5 text-[#0A74DA]" />}
-                      {tier.id === 'premium' && <Star className="w-5 h-5 text-amber-400 fill-amber-400" />}
-                      <h3 className={cn(
-                        "text-sm font-bold uppercase tracking-[0.2em]",
-                        tier.recommended ? "text-slate-400" : "text-slate-500"
-                      )}>{tier.name}</h3>
-                    </div>
-                    
-                    <div className="flex items-baseline gap-1">
-                      <span className={cn(
-                        "text-3xl font-bold tracking-tight",
-                        tier.recommended 
-                          ? "bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400" 
-                          : "text-slate-900"
-                      )}>
-                        ₱{tier.price.toLocaleString()}
-                      </span>
-                      <span className={cn(
-                        "text-sm font-medium",
-                        tier.recommended ? "text-slate-400" : "text-slate-500"
-                      )}>/year</span>
-                    </div>
-                    
-                    <p className={cn(
-                      "text-sm mt-3 leading-relaxed",
-                      tier.recommended ? "text-slate-300" : "text-slate-500"
-                    )}>
-                      {tier.description}
-                    </p>
+              {/* Card Content */}
+              <div className="p-8 pt-2">
+                <div className="flex justify-between items-end mb-4">
+                  <div>
+                    <h3 className="text-2xl font-bold tracking-tight text-[#111318] mb-1">{tier.name}</h3>
+                    <p className="text-sm font-medium text-gray-400">{tier.tagline}</p>
                   </div>
+                  <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#135bec] group-hover:text-white transition-colors duration-300">
+                    <ChevronRight className="w-5 h-5" />
+                  </div>
+                </div>
 
-                  {/* Divider */}
-                  <div className={cn(
-                    "h-px w-full mb-6",
-                    tier.recommended ? "bg-white/10" : "bg-slate-100"
-                  )} />
+                <div className="space-y-3">
+                  {tier.mainBenefits.slice(0, 3).map((benefit, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-[#135bec]/5 flex items-center justify-center flex-shrink-0">
+                        <Check className="w-3 h-3 text-[#135bec] stroke-[3]" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-600">{benefit}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-                  {/* Benefits */}
-                  <ul className="space-y-4 mb-8">
-                    {tier.benefits.map((benefit, index) => (
-                      <li key={index} className="flex items-start gap-3.5">
-                        <div className={cn(
-                          "w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
-                          tier.recommended ? "bg-white/10" : "bg-blue-50"
-                        )}>
-                          <Check className={cn(
-                            "w-3.5 h-3.5",
-                            tier.recommended ? "text-amber-400" : "text-[#135bec]"
-                          )} />
-                        </div>
-                        <span className={cn(
-                          "text-sm font-medium leading-tight pt-1",
-                          tier.recommended ? "text-slate-200" : "text-slate-700"
-                        )}>{benefit.text}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* CTA Button */}
-                  <Button
-                    onClick={() => handleSelectTier(tier)}
-                    className={cn(
-                      "w-full rounded-full font-bold h-12 text-sm tracking-wide transition-all active:scale-[0.98]",
-                      tier.recommended 
-                        ? "bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white shadow-lg shadow-orange-500/20 border-0" 
-                        : "bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-200"
-                    )}
-                  >
-                    {tier.recommended ? "Claim VIP Access" : `Select ${tier.name}`}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
+              {/* Bottom Accent Line */}
+              <div 
+                className="h-1.5 w-full" 
+                style={{ backgroundColor: tier.accentColor }} 
+              />
+            </div>
+          ))}
         </div>
+
+        {/* Rewards Preview (Aesthetic Placeholder based on screenshot) */}
+        <div className="mt-12 p-8 rounded-[2rem] bg-white/40 backdrop-blur-xl border border-white/50 shadow-sm text-center space-y-4">
+          <div className="flex flex-col items-center">
+             <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                <Gift className="w-6 h-6 text-gray-400" />
+             </div>
+             <p className="text-sm font-semibold text-gray-500">Hmm, no available rewards at the moment. Stay tuned!</p>
+          </div>
+          <Button 
+            variant="ghost" 
+            className="w-full rounded-full bg-white/60 hover:bg-white text-gray-900 font-bold border border-white/80 shadow-sm"
+          >
+            Go to Rewards
+          </Button>
+        </div>
+
       </div>
 
-      {/* Fixed Bottom Action */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white/95 to-transparent z-20">
-        <div className="max-w-md mx-auto text-center">
+      {/* Sticky Bottom Navigation (Skip Action) */}
+      <div className="fixed bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#F9FAFB] via-[#F9FAFB]/80 to-transparent z-20">
+        <div className="max-w-md mx-auto">
           <button 
             onClick={handleSkip}
-            className="text-slate-400 hover:text-slate-600 font-medium text-xs transition-colors py-2 px-4"
+            className="w-full py-4 px-6 rounded-full bg-[#111318] text-white font-bold text-sm tracking-wide shadow-xl shadow-gray-900/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
           >
-            Maybe later, I'll stick to the free plan for now
+            I'll stick to the Registration Plan
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </button>
         </div>
       </div>

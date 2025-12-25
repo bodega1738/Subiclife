@@ -96,7 +96,7 @@ export function PaymentModal({ isOpen, onClose, tier, amount }: PaymentModalProp
             {/* Amount Display */}
             <div className="text-center mb-6">
               <div className="text-3xl font-bold text-slate-900">₱{amount.toLocaleString()}</div>
-              <p className="text-sm text-slate-500 mt-1">{tier?.toUpperCase()} Membership - Monthly</p>
+              <p className="text-sm text-slate-500 mt-1">{tier?.toUpperCase()} Membership - Annual</p>
             </div>
 
             {/* Payment Method Tabs */}

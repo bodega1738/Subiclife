@@ -92,14 +92,12 @@ export default function OnboardingPage() {
   if (!user) return null
 
   return (
-    <div className="h-[100dvh] bg-gradient-to-b from-blue-100/60 via-white to-orange-100/60 flex flex-col relative overflow-hidden">
+    <div className="h-[100dvh] bg-[#F9FAFB] flex flex-col relative overflow-hidden font-sans">
       {/* Background Glows - Perfectionist Northern Lights */}
-      <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[60%] bg-[#135bec]/30 rounded-full blur-[120px] pointer-events-none mix-blend-multiply" />
-      <div className="absolute top-[10%] right-[-15%] w-[70%] h-[50%] bg-teal-300/40 rounded-full blur-[100px] pointer-events-none mix-blend-multiply" />
-      <div className="absolute bottom-[-15%] right-[-10%] w-[80%] h-[60%] bg-orange-300/40 rounded-full blur-[120px] pointer-events-none mix-blend-multiply" />
-      <div className="absolute bottom-[10%] left-[-20%] w-[60%] h-[40%] bg-rose-300/30 rounded-full blur-[100px] pointer-events-none mix-blend-multiply" />
-      <div className="absolute inset-0 bg-white/0 pointer-events-none" />
-      
+      <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[50%] bg-[#135bec]/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+      <div className="absolute top-[20%] right-[-5%] w-[50%] h-[40%] bg-teal-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-[10%] right-[-10%] w-[70%] h-[50%] bg-[#D97706]/5 rounded-full blur-[120px] pointer-events-none animate-pulse" style={{ animationDelay: '2s' }} />
+
       {/* Header */}
       <div className="px-6 py-6 flex items-center justify-between relative z-10">
         <div className="flex-1 max-w-[120px]">
