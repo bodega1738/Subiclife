@@ -1,11 +1,18 @@
 "use client"
 
 import type React from "react"
-import { useState, Suspense } from "react"
+import { useState, Suspense, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { User, Mail, Phone, MapPin, Calendar, Check, ArrowLeft } from "lucide-react"
+import { User, Mail, Phone, MapPin, Calendar, Heart, ArrowLeft, Camera, Upload } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useUser } from "@/lib/user-context"
 
 function RegisterForm() {
@@ -16,6 +23,22 @@ function RegisterForm() {
   const [phone, setPhone] = useState("")
   const [birthday, setBirthday] = useState("")
   const [address, setAddress] = useState("")
+  const [nationality, setNationality] = useState("")
+  const [gender, setGender] = useState("")
+  const [civilStatus, setCivilStatus] = useState("")
+  const [validIdType, setValidIdType] = useState("")
+  const [validIdNumber, setValidIdNumber] = useState("")
+  const [selfiePhoto, setSelfiePhoto] = useState<string | null>(null)
+  const [idPhoto, setIdPhoto] = useState<string | null>(null)
+
+  const selfieInputRef = useRef<HTMLInputElement>(null)
+  const idInputRef = useRef<HTMLInputElement>(null)
+  
+  // Beneficiary State
+  const [beneficiaryName, setBeneficiaryName] = useState("")
+  const [beneficiaryRelation, setBeneficiaryRelation] = useState("")
+  const [beneficiaryBirthday, setBeneficiaryBirthday] = useState("")
+  
   const [isLoading, setIsLoading] = useState(false)
   
   const { login } = useUser()
@@ -35,7 +58,9 @@ function RegisterForm() {
   }
 
   const isFormValid =
-    firstName && lastName && email && phone && birthday && isOver18(birthday) && address
+    firstName && lastName && email && phone && birthday && isOver18(birthday) && address &&
+    nationality && gender && civilStatus &&
+    beneficiaryName && beneficiaryRelation
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -45,7 +70,25 @@ function RegisterForm() {
     await new Promise((resolve) => setTimeout(resolve, 800))
     
     const fullName = `${firstName} ${middleName ? middleName + " " : ""}${lastName}`
-    login(fullName, email, `+63 ${phone}`, birthday, address)
+    login(
+      fullName, 
+      email, 
+      `+63 ${phone}`, 
+      birthday, 
+      address, 
+      {
+        name: beneficiaryName,
+        relationship: beneficiaryRelation,
+        birthday: beneficiaryBirthday
+      },
+      nationality,
+      gender,
+      civilStatus,
+      validIdType,
+      validIdNumber,
+      idPhoto || undefined,
+      selfiePhoto || undefined
+    )
     
     setIsLoading(false)
     router.push("/onboarding")
@@ -53,39 +96,31 @@ function RegisterForm() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans relative overflow-hidden">
-      {/* Background Gradient Section */}
-      <div className="absolute top-0 left-0 w-full h-full z-0 bg-gradient-to-b from-white via-blue-50 to-teal-800">
-        {/* Side Gradients */}
-        <div className="absolute top-1/4 -left-40 w-80 h-80 bg-blue-200/40 blur-[100px] rounded-full"></div>
-        <div className="absolute bottom-1/4 -right-40 w-80 h-80 bg-teal-200/40 blur-[100px] rounded-full"></div>
+      {/* Premium Northern Lights Gradient - Enhanced */}
+      <div className="absolute inset-0 z-0 bg-white overflow-hidden">
+        <div className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-teal-200/40 blur-[100px] rounded-full mix-blend-multiply animate-pulse"></div>
+        <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-blue-200/30 blur-[120px] rounded-full mix-blend-multiply"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-orange-100/50 blur-[100px] rounded-full mix-blend-multiply"></div>
+        <div className="absolute bottom-[20%] right-[10%] w-[400px] h-[400px] bg-teal-100/30 blur-[100px] rounded-full mix-blend-multiply"></div>
       </div>
 
       {/* Header */}
-      <div className="pt-8 px-6 pb-8 text-center relative z-10">
+      <div className="pt-8 px-6 pb-4 text-center relative z-10">
         <button
           onClick={() => router.push("/")}
-          className="absolute left-6 top-8 p-2 -ml-2 hover:bg-white/20 rounded-full transition-colors"
+          className="absolute left-6 top-8 p-2 -ml-2 hover:bg-black/5 rounded-full transition-colors"
         >
-          <ArrowLeft className="w-6 h-6 text-slate-900" />
+          <ArrowLeft className="w-6 h-6 text-gray-900" />
         </button>
 
-        {/* Logo */}
-        <div className="mb-6 flex justify-center">
-          <img src="/images/subic-life-script-logo.png" alt="Subic Life Logo" className="h-12 object-contain brightness-0" />
+        {/* Logo - Refined Header */}
+        <div className="mb-2 flex justify-center">
+          <img src="/images/subic-life-script-logo.png" alt="Subic Life Logo" className="h-16 object-contain brightness-0" />
         </div>
-        
-        <h2 className="text-sm font-bold text-slate-900 tracking-widest uppercase mb-4 text-center mx-auto">Create an account</h2>
-        <h1 className="text-5xl font-black text-slate-900 leading-[0.9] tracking-tighter">
-          Subic<br />
-          Life
-        </h1>
-        <p className="text-slate-600 text-sm mt-6 text-center font-medium mx-auto max-w-[280px]">
-          Join Subic.Life for exclusive travel benefits
-        </p>
       </div>
 
-      {/* Form Container */}
-      <div className="flex-1 bg-white rounded-t-[2.5rem] px-6 pt-10 pb-8 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] overflow-y-auto">
+      {/* Form Container - Glass Effect */}
+      <div className="flex-1 bg-white/80 backdrop-blur-xl rounded-t-[2.5rem] border-t border-white/60 px-8 pt-10 pb-8 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)] overflow-y-auto">
         <form onSubmit={handleSubmit} className="space-y-5 max-w-md mx-auto">
           
           {/* First Name */}
@@ -218,12 +253,239 @@ function RegisterForm() {
             </div>
           </div>
 
+          {/* Compliance Section */}
+          <div className="space-y-5 pt-2">
+            <div className="space-y-1.5">
+              <label htmlFor="nationality" className="block text-base font-bold text-slate-900">
+                Nationality
+              </label>
+              <Input
+                id="nationality"
+                type="text"
+                value={nationality}
+                onChange={(e) => setNationality(e.target.value)}
+                placeholder="e.g. Filipino"
+                className="h-14 text-base px-5 bg-gray-100 border-none rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-gray-400 font-medium"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="block text-base font-bold text-slate-900">
+                  Gender
+                </label>
+                <Select value={gender} onValueChange={setGender}>
+                  <SelectTrigger className="h-14 bg-gray-100 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 font-medium text-slate-900">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-2xl border-none shadow-xl">
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-base font-bold text-slate-900">
+                  Civil Status
+                </label>
+                <Select value={civilStatus} onValueChange={setCivilStatus}>
+                  <SelectTrigger className="h-14 bg-gray-100 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 font-medium text-slate-900">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-2xl border-none shadow-xl">
+                    <SelectItem value="single">Single</SelectItem>
+                    <SelectItem value="married">Married</SelectItem>
+                    <SelectItem value="widowed">Widowed</SelectItem>
+                    <SelectItem value="divorced">Divorced</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Identity Verification Section (Optional for Demo) */}
+          <div className="pt-4 border-t border-gray-100">
+            <h3 className="text-xs font-bold text-gray-400 tracking-[0.2em] uppercase mb-6">Identity Verification</h3>
+            
+            <div className="space-y-5">
+              {/* ID Type */}
+              <div className="space-y-1.5">
+                <label className="block text-base font-bold text-slate-900">
+                  Valid ID Type
+                </label>
+                <Select value={validIdType} onValueChange={setValidIdType}>
+                  <SelectTrigger className="h-14 bg-gray-100 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 font-medium text-slate-900">
+                    <SelectValue placeholder="Select ID Type" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-2xl border-none shadow-xl">
+                    <SelectItem value="passport">Passport</SelectItem>
+                    <SelectItem value="drivers_license">Driver's License</SelectItem>
+                    <SelectItem value="national_id">National ID (PhilID)</SelectItem>
+                    <SelectItem value="umid">UMID</SelectItem>
+                    <SelectItem value="voters_id">Voter's ID</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* ID Number */}
+              <div className="space-y-1.5">
+                <label htmlFor="validIdNumber" className="block text-base font-bold text-slate-900">
+                  ID Number
+                </label>
+                <Input
+                  id="validIdNumber"
+                  type="text"
+                  value={validIdNumber}
+                  onChange={(e) => setValidIdNumber(e.target.value)}
+                  placeholder="Enter ID number"
+                  className="h-14 text-base px-5 bg-gray-100 border-none rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-gray-400 font-medium"
+                />
+              </div>
+
+              {/* Photo Capture Segment */}
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                {/* Selfie Capture */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-bold text-slate-700 px-1">Take Selfie</label>
+                  <button
+                    type="button"
+                    onClick={() => selfieInputRef.current?.click()}
+                    className="w-full aspect-square rounded-2xl bg-gray-100 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 hover:bg-gray-200 transition-colors overflow-hidden relative"
+                  >
+                    {selfiePhoto ? (
+                      <img src={selfiePhoto} alt="Selfie" className="w-full h-full object-cover" />
+                    ) : (
+                      <>
+                        <Camera className="w-8 h-8 text-gray-400" />
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tap to Snap</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      ref={selfieInputRef}
+                      className="hidden"
+                      accept="image/*"
+                      capture="user"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onloadend = () => setSelfiePhoto(reader.result as string)
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+                  </button>
+                </div>
+
+                {/* ID Photo Capture */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-bold text-slate-700 px-1">ID Front</label>
+                  <button
+                    type="button"
+                    onClick={() => idInputRef.current?.click()}
+                    className="w-full aspect-square rounded-2xl bg-gray-100 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 hover:bg-gray-200 transition-colors overflow-hidden relative"
+                  >
+                    {idPhoto ? (
+                      <img src={idPhoto} alt="ID Photo" className="w-full h-full object-cover" />
+                    ) : (
+                      <>
+                        <Upload className="w-8 h-8 text-gray-400" />
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Upload ID</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      ref={idInputRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onloadend = () => setIdPhoto(reader.result as string)
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Beneficiary Information Section */}
+          <div className="pt-4 border-t border-gray-100">
+            <h3 className="text-xs font-bold text-gray-400 tracking-[0.2em] uppercase mb-6">Beneficiary Information</h3>
+            
+            <div className="space-y-5">
+              {/* Beneficiary Name */}
+              <div className="space-y-1.5">
+                <label htmlFor="beneficiaryName" className="block text-base font-bold text-slate-900">
+                  Beneficiary Full Name
+                </label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                  <Input
+                    id="beneficiaryName"
+                    type="text"
+                    value={beneficiaryName}
+                    onChange={(e) => setBeneficiaryName(e.target.value)}
+                    placeholder="Enter full name"
+                    className="h-14 text-base pl-12 bg-gray-100 border-none rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-gray-400 font-medium"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Relationship */}
+              <div className="space-y-1.5">
+                <label htmlFor="beneficiaryRelation" className="block text-base font-bold text-slate-900">
+                  Relationship
+                </label>
+                <div className="relative">
+                  <Heart className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                  <Input
+                    id="beneficiaryRelation"
+                    type="text"
+                    value={beneficiaryRelation}
+                    onChange={(e) => setBeneficiaryRelation(e.target.value)}
+                    placeholder="e.g. Spouse, Child, Parent"
+                    className="h-14 text-base pl-12 bg-gray-100 border-none rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-gray-400 font-medium"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Beneficiary Birthday */}
+              <div className="space-y-1.5">
+                <label htmlFor="beneficiaryBirthday" className="block text-base font-bold text-slate-900">
+                  Beneficiary Birthday
+                </label>
+                <div className="relative">
+                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                  <Input
+                    id="beneficiaryBirthday"
+                    type="date"
+                    value={beneficiaryBirthday}
+                    onChange={(e) => setBeneficiaryBirthday(e.target.value)}
+                    className="h-14 text-base pl-12 bg-gray-100 border-none rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500 transition-all font-medium"
+                  />
+                </div>
+                <p className="text-xs text-slate-400 px-1">Optional</p>
+              </div>
+            </div>
+          </div>
+
           {/* Submit Button */}
           <div className="pt-6 pb-4">
             <Button
               type="submit"
               disabled={isLoading || !isFormValid}
-              className="w-full h-14 text-base font-bold bg-black hover:bg-slate-800 text-white rounded-full transition-all shadow-lg"
+              className="w-full h-14 text-base font-bold bg-black hover:scale-[1.02] active:scale-95 text-white rounded-full transition-all shadow-premium"
             >
               {isLoading ? "Creating..." : "Continue"}
             </Button>

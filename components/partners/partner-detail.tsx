@@ -203,10 +203,10 @@ export function PartnerDetail({ partner }: PartnerDetailProps) {
             {packages.map((pkg) => {
               const discountedPrice = pkg.price * (1 - discount / 100)
               return (
-                <div key={pkg.id} className="rounded-xl border border-gray-200 p-4 transition-all hover:border-[#135bec]/30">
+                <div key={pkg.id} className="rounded-[1.5rem] border border-gray-100 p-5 shadow-sm hover:shadow-premium transition-all duration-300 bg-white group">
                   <div className="mb-3 flex items-start justify-between">
-                    <h3 className="font-bold text-gray-900">{pkg.name}</h3>
-                    <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100">
+                    <h3 className="font-bold text-lg text-gray-900 group-hover:text-subic-blue transition-colors">{pkg.name}</h3>
+                    <Badge variant="secondary" className="bg-green-50 text-green-700 hover:bg-green-100 border border-green-100 rounded-full px-3">
                       -{discount}% OFF
                     </Badge>
                   </div>
@@ -225,7 +225,7 @@ export function PartnerDetail({ partner }: PartnerDetailProps) {
                     <span className="text-sm text-gray-400 line-through">₱{pkg.price.toLocaleString()}</span>
                   </div>
 
-                  <Button variant="outline" className="w-full border-2 border-gray-200 font-semibold hover:bg-gray-50 hover:border-gray-300">
+                  <Button variant="outline" className="w-full rounded-full border-2 border-gray-200 font-semibold hover:bg-gray-50 hover:border-gray-300 h-12">
                     Select Package
                   </Button>
                 </div>
@@ -236,20 +236,22 @@ export function PartnerDetail({ partner }: PartnerDetailProps) {
       </div>
 
       {/* Sticky Bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 flex h-24 items-center justify-between border-t border-gray-200 bg-white px-6 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+      <div className="fixed bottom-0 left-0 right-0 z-50 flex h-28 items-start pt-6 justify-between bg-white/90 backdrop-blur-xl px-8 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] rounded-t-[2.5rem]">
         <div>
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">From</span>
-            <span className="text-xl font-bold text-gray-900">₱{discountedLowestPrice.toLocaleString()}</span>
+            <span className="text-2xl font-black text-gray-900 tracking-tight">₱{discountedLowestPrice.toLocaleString()}</span>
           </div>
-          <p className="text-xs font-medium text-green-600">
-            Save ₱{savings.toLocaleString()} ({discount}% Tier Discount)
-          </p>
+          <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-green-50 border border-green-100 mt-1">
+            <p className="text-[10px] font-bold text-green-700 uppercase tracking-wide">
+              Save ₱{savings.toLocaleString()}
+            </p>
+          </div>
         </div>
         
         <Button 
           onClick={() => setIsBookingOpen(true)}
-          className="h-12 rounded-xl bg-[#135bec] px-8 font-bold text-white shadow-lg shadow-blue-200 transition-all hover:bg-[#0e45b5] active:scale-95"
+          className="h-14 rounded-full bg-black px-8 font-bold text-white shadow-premium transition-all hover:scale-105 active:scale-95"
         >
           Request Booking
         </Button>

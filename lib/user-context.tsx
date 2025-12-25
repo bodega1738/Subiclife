@@ -1,14 +1,28 @@
 "use client"
 
 import { createContext, useContext, useEffect, type ReactNode } from "react"
-import type { User, MembershipTier, MerchantSession } from "./types"
+import type { User, MembershipTier, MerchantSession, Beneficiary } from "./types"
 import { useMockDBStore, useHydratedMockDB } from "./mock-db"
 
 interface UserContextType {
   user: User | null
   merchantSession: MerchantSession | null
   setUser: (user: User | null) => void
-  login: (name: string, email: string, phone?: string, birthday?: string, address?: string) => void
+  login: (
+    name: string,
+    email: string,
+    phone?: string,
+    birthday?: string,
+    address?: string,
+    beneficiary?: Beneficiary,
+    nationality?: string,
+    gender?: string,
+    civilStatus?: string,
+    validIdType?: string,
+    validIdNumber?: string,
+    idPhoto?: string,
+    selfiePhoto?: string,
+  ) => void
   loginAsDemo: () => void
   upgradeTier: (tier: MembershipTier) => void
   addPoints: (amount: number) => void
@@ -35,8 +49,8 @@ const insuranceAmounts: Record<string, number> = {
 export const discountPercentages: Record<string, number> = {
   starter: 5,
   basic: 10,
-  premium: 20,
-  elite: 25,
+  premium: 15,
+  elite: 20,
 }
 
 export const tierThresholds = {
@@ -76,7 +90,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const login = (name: string, email: string, phone?: string, birthday?: string, address?: string) => {
+  const login = (
+    name: string,
+    email: string,
+    phone?: string,
+    birthday?: string,
+    address?: string,
+    beneficiary?: Beneficiary,
+    nationality?: string,
+    gender?: string,
+    civilStatus?: string,
+    validIdType?: string,
+    validIdNumber?: string,
+    idPhoto?: string,
+    selfiePhoto?: string,
+  ) => {
     const newUser: User = {
       id: crypto.randomUUID(),
       name,
@@ -84,6 +112,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
       phone,
       birthday,
       address,
+      nationality,
+      gender,
+      civilStatus,
+      validIdType,
+      validIdNumber,
+      idPhoto,
+      selfiePhoto,
+      beneficiary,
       tier: "starter",
       member_id: generateMemberId("starter"),
       insuranceAmount: insuranceAmounts.starter,

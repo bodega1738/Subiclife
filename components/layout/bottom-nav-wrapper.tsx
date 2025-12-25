@@ -11,8 +11,9 @@ export function BottomNavWrapper() {
   const isLanding = pathname === "/"
   const isRegister = pathname === "/register"
   const isStarterPayment = pathname === "/starter-payment"
+  const isOnboarding = pathname === "/onboarding"
 
-  const shouldShowBottomNav = !isPortal && !isLanding && !isRegister && !isStarterPayment
+  const shouldShowBottomNav = !isPortal && !isLanding && !isRegister && !isStarterPayment && !isOnboarding
 
   if (!shouldShowBottomNav) return null
 

@@ -70,7 +70,7 @@ export default function OnboardingPage() {
 
   const handleFinish = () => {
     updatePreferences(data)
-    router.push("/home")
+    router.push("/onboarding/offer")
   }
 
   const toggleInterest = (interest: string) => {
@@ -92,57 +92,70 @@ export default function OnboardingPage() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="h-[100dvh] bg-gradient-to-b from-blue-100/60 via-white to-orange-100/60 flex flex-col relative overflow-hidden">
+      {/* Background Glows - Perfectionist Northern Lights */}
+      <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[60%] bg-[#135bec]/30 rounded-full blur-[120px] pointer-events-none mix-blend-multiply" />
+      <div className="absolute top-[10%] right-[-15%] w-[70%] h-[50%] bg-teal-300/40 rounded-full blur-[100px] pointer-events-none mix-blend-multiply" />
+      <div className="absolute bottom-[-15%] right-[-10%] w-[80%] h-[60%] bg-orange-300/40 rounded-full blur-[120px] pointer-events-none mix-blend-multiply" />
+      <div className="absolute bottom-[10%] left-[-20%] w-[60%] h-[40%] bg-rose-300/30 rounded-full blur-[100px] pointer-events-none mix-blend-multiply" />
+      <div className="absolute inset-0 bg-white/0 pointer-events-none" />
+      
       {/* Header */}
-      <div className="p-4 flex items-center justify-between border-b">
-        <div className="flex-1 max-w-[200px]">
-          <Progress value={progress} className="h-1 bg-slate-100" />
-          <p className="text-xs text-slate-500 mt-2 font-medium">Step {step} of {totalSteps}</p>
+      <div className="px-6 py-6 flex items-center justify-between relative z-10">
+        <div className="flex-1 max-w-[120px]">
+          {/* Segmented Progress Bar */}
+          <div className="flex gap-1.5 h-1">
+            {[1, 2, 3].map((s) => (
+              <div 
+                key={s}
+                className={cn(
+                  "flex-1 rounded-full transition-all duration-700 ease-in-out",
+                  s <= step ? "bg-[#135bec] shadow-[0_0_8px_rgba(19,91,236,0.3)]" : "bg-slate-200/60"
+                )}
+              />
+            ))}
+          </div>
+          <p className="text-[8px] uppercase tracking-[0.25em] text-slate-400 mt-3 font-black">Step {step} of {totalSteps}</p>
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={handleSkipAll}
-          className="text-slate-500 hover:text-slate-900"
-        >
-          Skip All
-        </Button>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-2xl space-y-8 animate-in fade-in duration-500">
+      <div className="flex-1 flex flex-col px-6 justify-center relative z-10 -mt-8">
+        <div className="w-full max-w-lg mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
           
           {step === 1 && (
             <div className="space-y-6">
-              <div className="space-y-2">
-                <h1 className="text-2xl font-bold text-slate-900">How often do you visit Subic Bay?</h1>
-                <p className="text-slate-500">Help us tailor your experience based on your familiarity with the area.</p>
+              <div className="space-y-1.5">
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">How often do you <br/>visit Subic?</h1>
+                <p className="text-slate-500 text-sm leading-relaxed">Tailoring your experience based on familiarity.</p>
               </div>
-              <div className="grid gap-3">
+              <div className="grid gap-2.5">
                 {[
                   { id: 'first-time', label: 'First-time visitor', icon: Plane },
-                  { id: 'occasional', label: 'Occasional (2-3x/year)', icon: Compass },
-                  { id: 'frequent', label: 'Frequent traveler', icon: Sparkles },
-                  { id: 'local-resident', label: 'Local resident', icon: Hotel }
+                  { id: 'occasional', label: 'Occasional Explorer', icon: Compass },
+                  { id: 'frequent', label: 'Frequent Guest', icon: Sparkles },
+                  { id: 'local-resident', label: 'Local Resident', icon: Hotel }
                 ].map((option) => (
                   <button
                     key={option.id}
                     onClick={() => setData({ ...data, travelFrequency: option.id as any })}
                     className={cn(
-                      "flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left",
+                      "flex items-center gap-4 p-3.5 rounded-2xl border transition-all duration-300 text-left group",
                       data.travelFrequency === option.id
-                        ? "border-[#135bec] bg-blue-50 text-[#135bec]"
-                        : "border-slate-100 bg-slate-50 hover:border-slate-200"
+                        ? "border-[#135bec] bg-white shadow-md ring-2 ring-[#135bec]/5"
+                        : "border-white bg-white/60 hover:border-slate-200 hover:bg-white/80 backdrop-blur-sm shadow-sm"
                     )}
                   >
                     <div className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center",
-                      data.travelFrequency === option.id ? "bg-blue-100" : "bg-white"
+                      "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                      data.travelFrequency === option.id ? "bg-[#135bec] text-white" : "bg-slate-100 text-slate-600 group-hover:bg-slate-200"
                     )}>
                       <option.icon className="w-5 h-5" />
                     </div>
-                    <span className="font-semibold">{option.label}</span>
+                    <span className={cn(
+                      "font-semibold text-base",
+                      data.travelFrequency === option.id ? "text-slate-900" : "text-slate-600"
+                    )}>{option.label}</span>
                   </button>
                 ))}
               </div>
@@ -151,35 +164,38 @@ export default function OnboardingPage() {
 
           {step === 2 && (
             <div className="space-y-6">
-              <div className="space-y-2">
-                <h1 className="text-2xl font-bold text-slate-900">What interests you most?</h1>
-                <p className="text-slate-500">Select all that apply. We'll show you the best deals for these categories.</p>
+              <div className="space-y-1.5">
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">What interests <br/>you most?</h1>
+                <p className="text-slate-500 text-sm leading-relaxed">Curating deals based on your passions.</p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {[
-                  { id: 'hotels', label: 'Hotels & Stays', icon: Hotel },
-                  { id: 'activities', label: 'Adventure Activities', icon: Mountain },
-                  { id: 'dining', label: 'Dining Experiences', icon: Utensils },
-                  { id: 'water-sports', label: 'Water Sports', icon: Waves },
-                  { id: 'wellness', label: 'Wellness & Spa', icon: Sparkles }
+                  { id: 'hotels', label: 'Boutique Stays', icon: Hotel },
+                  { id: 'activities', label: 'Adventure', icon: Mountain },
+                  { id: 'dining', label: 'Gastronomy', icon: Utensils },
+                  { id: 'water-sports', label: 'Ocean Life', icon: Waves },
+                  { id: 'wellness', label: 'Rejuvenation', icon: Sparkles }
                 ].map((option) => (
                   <button
                     key={option.id}
                     onClick={() => toggleInterest(option.id)}
                     className={cn(
-                      "flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left",
+                      "flex items-center gap-3.5 p-3.5 rounded-2xl border transition-all duration-300 text-left group",
                       data.interests.includes(option.id)
-                        ? "border-[#135bec] bg-blue-50 text-[#135bec]"
-                        : "border-slate-100 bg-slate-50 hover:border-slate-200"
+                        ? "border-[#135bec] bg-white shadow-md ring-2 ring-[#135bec]/5"
+                        : "border-white bg-white/60 hover:border-slate-200 hover:bg-white/80 backdrop-blur-sm shadow-sm"
                     )}
                   >
                     <div className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center",
-                      data.interests.includes(option.id) ? "bg-blue-100" : "bg-white"
+                      "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                      data.interests.includes(option.id) ? "bg-[#135bec] text-white" : "bg-slate-100 text-slate-600 group-hover:bg-slate-200"
                     )}>
                       <option.icon className="w-5 h-5" />
                     </div>
-                    <span className="font-semibold">{option.label}</span>
+                    <span className={cn(
+                      "font-semibold text-sm",
+                      data.interests.includes(option.id) ? "text-slate-900" : "text-slate-600"
+                    )}>{option.label}</span>
                   </button>
                 ))}
               </div>
@@ -188,36 +204,39 @@ export default function OnboardingPage() {
 
           {step === 3 && (
             <div className="space-y-6">
-              <div className="space-y-2">
-                <h1 className="text-2xl font-bold text-slate-900">What's your typical travel budget?</h1>
-                <p className="text-slate-500">We want to make sure our recommendations fit your style.</p>
+              <div className="space-y-1.5">
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">Your typical <br/>travel style?</h1>
+                <p className="text-slate-500 text-sm leading-relaxed">Defining your ideal Subic experience.</p>
               </div>
-              <div className="grid gap-3">
+              <div className="grid gap-2.5">
                 {[
-                  { id: 'budget', label: 'Budget-friendly', sub: '₱2-5K/day', icon: Wallet },
-                  { id: 'moderate', label: 'Moderate', sub: '₱5-10K/day', icon: Wallet },
-                  { id: 'luxury', label: 'Luxury', sub: '₱10-20K/day', icon: Sparkles },
-                  { id: 'ultra-luxury', label: 'Ultra-luxury', sub: '₱20K+/day', icon: Sparkles }
+                  { id: 'budget', label: 'Essential', sub: '₱2-5K / day', icon: Wallet },
+                  { id: 'moderate', label: 'Balanced', sub: '₱5-10K / day', icon: Wallet },
+                  { id: 'luxury', label: 'Premium', sub: '₱10-20K / day', icon: Sparkles },
+                  { id: 'ultra-luxury', label: 'Elite', sub: '₱20K+ / day', icon: Sparkles }
                 ].map((option) => (
                   <button
                     key={option.id}
                     onClick={() => setData({ ...data, budgetRange: option.id as any })}
                     className={cn(
-                      "flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left",
+                      "flex items-center gap-4 p-3.5 rounded-2xl border transition-all duration-300 text-left group",
                       data.budgetRange === option.id
-                        ? "border-[#135bec] bg-blue-50 text-[#135bec]"
-                        : "border-slate-100 bg-slate-50 hover:border-slate-200"
+                        ? "border-[#135bec] bg-white shadow-md ring-2 ring-[#135bec]/5"
+                        : "border-white bg-white/60 hover:border-slate-200 hover:bg-white/80 backdrop-blur-sm shadow-sm"
                     )}
                   >
                     <div className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center",
-                      data.budgetRange === option.id ? "bg-blue-100" : "bg-white"
+                      "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                      data.budgetRange === option.id ? "bg-[#135bec] text-white" : "bg-slate-100 text-slate-600 group-hover:bg-slate-200"
                     )}>
                       <option.icon className="w-5 h-5" />
                     </div>
                     <div>
-                      <div className="font-semibold">{option.label}</div>
-                      <div className="text-sm opacity-70">{option.sub}</div>
+                      <div className={cn(
+                        "font-semibold text-base",
+                        data.budgetRange === option.id ? "text-slate-900" : "text-slate-600"
+                      )}>{option.label}</div>
+                      <div className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.1em] mt-0.5">{option.sub}</div>
                     </div>
                   </button>
                 ))}
@@ -229,21 +248,21 @@ export default function OnboardingPage() {
       </div>
 
       {/* Footer Navigation */}
-      <div className="p-4 bg-white border-t flex items-center justify-between">
+      <div className="px-6 py-6 pb-10 bg-transparent relative z-10 flex items-center justify-between gap-4 max-w-lg mx-auto w-full">
         <Button
           variant="ghost"
           onClick={step === 1 ? handleSkipAll : handleBack}
-          className="text-slate-500"
+          className="text-slate-400 hover:text-slate-600 rounded-full h-11 px-6 font-semibold text-sm transition-colors"
         >
           {step === 1 ? "Skip" : "Back"}
         </Button>
         <Button
           onClick={handleNext}
           disabled={isNextDisabled()}
-          className="bg-[#135bec] hover:bg-[#135bec]/90 text-white rounded-xl px-8 h-12 min-w-[120px] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-slate-900 hover:bg-slate-800 text-white rounded-full h-11 px-8 font-semibold text-sm shadow-lg shadow-slate-200 transition-all active:scale-[0.98] disabled:opacity-30 disabled:grayscale"
         >
-          {step === totalSteps ? "Finish" : "Next"}
-          <ChevronRight className="w-4 h-4 ml-2" />
+          <span>{step === totalSteps ? "Complete" : "Next"}</span>
+          <ChevronRight className="w-4 h-4 ml-1.5" />
         </Button>
       </div>
     </div>

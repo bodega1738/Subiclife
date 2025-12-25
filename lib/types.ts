@@ -1,5 +1,11 @@
 export type MembershipTier = "starter" | "basic" | "premium" | "elite" | null
 
+export interface Beneficiary {
+  name: string
+  relationship: string
+  birthday?: string
+}
+
 export interface User {
   id: string
   name: string
@@ -7,6 +13,14 @@ export interface User {
   phone?: string
   birthday?: string
   address?: string
+  nationality?: string
+  gender?: string
+  civilStatus?: string
+  validIdType?: string
+  validIdNumber?: string
+  idPhoto?: string // URL or base64
+  selfiePhoto?: string // URL or base64
+  beneficiary?: Beneficiary
   tier: MembershipTier
   member_id?: string
   insuranceAmount: number
@@ -25,6 +39,7 @@ export interface Partner {
   id: string
   name: string
   logo: string
+  image?: string
   category: "hotels" | "activities" | "dining" | "water-sports" | "services"
   description: string
   discount: number

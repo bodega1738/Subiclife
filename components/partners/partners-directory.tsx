@@ -131,57 +131,56 @@ export function PartnersDirectory({ defaultCategory }: PartnersDirectoryProps) {
           </div>
         </div>
 
-        {/* Category tabs */}
-        <div className="max-w-md mx-auto px-4 pb-3">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: "none" }}>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  activeCategory === cat.id
-                    ? "bg-[#0A74DA] text-white"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Partner Grid */}
-      <div className="max-w-md mx-auto px-4 py-4">
-        <div className="grid grid-cols-2 gap-3">
-          {filteredPartners.map((partner) => (
-            <Card
-              key={partner.id}
-              onClick={() => router.push(`/partners/${partner.id}`)}
-              className="overflow-hidden shadow-sm border-0 hover:shadow-md transition-shadow cursor-pointer active:scale-95 duration-150"
+      {/* Category tabs */}
+      <div className="max-w-md mx-auto px-4 pb-3">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: "none" }}>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`flex-shrink-0 px-5 py-2.5 rounded-full text-xs font-bold tracking-wide uppercase transition-all ${
+                activeCategory === cat.id
+                  ? "bg-black text-white shadow-md"
+                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+              }`}
             >
-              <CardContent className="p-4">
-                <div className="w-16 h-16 mx-auto mb-3 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center">
-                  <img
-                    src={partner.logo || "/placeholder.svg"}
-                    alt={partner.name}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <h3 className="text-sm font-semibold text-slate-900 text-center line-clamp-2 mb-1">{partner.name}</h3>
-                <p className="text-xs text-slate-500 text-center capitalize mb-2">
-                  {partner.category.replace("-", " ")}
-                </p>
-                <Badge className="w-full justify-center bg-green-100 text-green-700 hover:bg-green-100">
-                  {partner.discount}% OFF
-                </Badge>
-                <button className="w-full mt-2 text-xs text-[#0A74DA] font-medium flex items-center justify-center gap-1">
-                  View Details <ChevronRight className="w-3 h-3" />
-                </button>
-              </CardContent>
-            </Card>
+              {cat.label}
+            </button>
           ))}
         </div>
+      </div>
+    </div>
+
+    {/* Partner Grid */}
+    <div className="max-w-md mx-auto px-4 py-4 pb-24">
+      <div className="grid grid-cols-2 gap-4">
+        {filteredPartners.map((partner) => (
+          <div
+            key={partner.id}
+            onClick={() => router.push(`/partners/${partner.id}`)}
+            className="group relative overflow-hidden rounded-[1.5rem] bg-white p-4 shadow-sm hover:shadow-premium transition-all duration-300 cursor-pointer border border-gray-100"
+          >
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center p-2 group-hover:scale-110 transition-transform duration-500">
+              <img
+                src={partner.logo || "/placeholder.svg"}
+                alt={partner.name}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            
+            <div className="text-center">
+              <h3 className="text-sm font-bold text-gray-900 leading-tight mb-1 group-hover:text-subic-blue transition-colors">{partner.name}</h3>
+              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-3">
+                {partner.category.replace("-", " ")}
+              </p>
+              
+              <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-green-50 border border-green-100">
+                <span className="text-[10px] font-bold text-green-700">{partner.discount}% OFF</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
         {filteredPartners.length === 0 && (
           <div className="text-center py-12">
