@@ -58,7 +58,7 @@ const tiers: TierInfo[] = [
   {
     id: "elite",
     name: "Elite",
-    displayName: "The Sovereign",
+    displayName: "Sovereign",
     price: 25500,
     copy: "Ultimate Lifestyle Mastery",
     tagline: "Uncompromising Subic excellence",
@@ -89,29 +89,32 @@ export function MembershipOffer() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] flex flex-col relative overflow-hidden font-sans text-gray-900 selection:bg-[#135bec]/10">
+    <div className="min-h-screen bg-white flex flex-col relative overflow-hidden font-sans text-[#111318] selection:bg-[#135bec]/10">
       
-      {/* Soft Blending Premium Background */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 bg-[#F9FAFB]">
-        {/* Large, soft color bleeds */}
-        <div className="absolute top-[-15%] left-[-10%] w-[70%] h-[60%] bg-[#135bec]/10 blur-[120px] rounded-full" />
-        <div className="absolute top-[10%] right-[-5%] w-[60%] h-[50%] bg-[#10B981]/5 blur-[100px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[80%] h-[60%] bg-[#D97706]/5 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[10%] left-[-15%] w-[50%] h-[50%] bg-[#135bec]/5 blur-[100px] rounded-full" />
+      {/* Soft Blending Premium Background - Bistro BFF Reference */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 bg-white">
+        {/* Top Teal Mist - Highly Visible */}
+        <div className="absolute top-[-15%] left-[-20%] w-[140%] h-[70%] bg-[#B2EBF2]/40 blur-[120px] rounded-full" />
+        
+        {/* Center Soft Glow */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-full h-1/2 bg-white/80 blur-[60px]" />
+
+        {/* Bottom Warm Earth Mist - Highly Visible */}
+        <div className="absolute bottom-[-10%] right-[-20%] w-[120%] h-[60%] bg-[#D7CCC8]/50 blur-[130px] rounded-full" />
+        <div className="absolute bottom-[-5%] left-[-10%] w-[100%] h-[50%] bg-[#EFEBE9]/40 blur-[100px] rounded-full" />
       </div>
       
       {/* Main Scrollable Content */}
       <div className="relative z-10 flex-1 flex flex-col p-6 pb-48 max-w-lg mx-auto w-full">
         
         {/* BFF Style Header */}
-        <header className="pt-12 pb-12 text-center space-y-2 animate-in fade-in slide-in-from-top-4 duration-1000">
-          <p className="text-lg font-bold text-gray-500 tracking-tight">Hello, Subic!</p>
-          <h1 className="text-5xl font-black tracking-tight text-gray-900 leading-tight">
-            Welcome to<br/>
-            <span className="text-[#135bec]">The Life.</span>
+        <header className="pt-16 pb-12 text-center space-y-4 animate-in fade-in duration-1000">
+          <h1 className="text-4xl font-black tracking-tighter text-[#111318] leading-[1.1]">
+            Welcome,<br/>
+            {user?.name || 'Subic Life'}
           </h1>
-          <p className="text-gray-500 text-base font-medium max-w-[280px] mx-auto leading-relaxed pt-4">
-            You are one step closer to unlocking premium island perks.
+          <p className="text-[#111318]/70 text-lg font-medium max-w-[300px] mx-auto leading-relaxed pt-2">
+            You are now a step closer to enjoying exclusive island perks.
           </p>
         </header>
 
@@ -122,9 +125,9 @@ export function MembershipOffer() {
               key={tier.id}
               onClick={() => handleSelectTier(tier)}
               className={cn(
-                "group relative flex flex-col p-7 rounded-[3rem] transition-all duration-700 cursor-pointer active:scale-[0.98]",
-                "bg-white border border-gray-100/50 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.06)] hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] hover:-translate-y-2",
-                tier.recommended && "ring-2 ring-[#D97706]/10 border-[#D97706]/5"
+                "group relative flex flex-col p-7 rounded-[3.5rem] transition-all duration-700 cursor-pointer active:scale-[0.98]",
+                "bg-white border border-white/20 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] hover:shadow-[0_48px_80px_-24px_rgba(0,0,0,0.12)] hover:-translate-y-2",
+                tier.recommended && "ring-1 ring-[#D97706]/20"
               )}
             >
               {/* Inner BFF Member Card Visual */}
@@ -179,10 +182,10 @@ export function MembershipOffer() {
                 </div>
 
                 <Button 
-                  className="w-full h-14 rounded-full bg-black text-white hover:bg-gray-800 font-bold transition-all flex items-center justify-center gap-2 group/btn"
+                  className="w-full h-16 rounded-full bg-[#111318] text-white hover:bg-black font-bold text-lg transition-all flex items-center justify-center gap-3 group/btn"
                 >
                   Get {tier.displayName}
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
                 </Button>
               </div>
             </div>
@@ -216,7 +219,7 @@ export function MembershipOffer() {
       </div>
 
       {/* BFF Style Fixed Action Area */}
-      <div className="fixed bottom-0 left-0 right-0 p-8 pb-10 bg-gradient-to-t from-white via-white/95 to-transparent z-40 backdrop-blur-sm">
+      <div className="fixed bottom-[-20px] left-0 right-0 p-8 pb-12 bg-gradient-to-t from-white via-white/95 to-transparent z-40 backdrop-blur-sm">
         <div className="max-w-lg mx-auto flex flex-col items-center space-y-4">
           <button 
             onClick={handleSkip}

@@ -30,11 +30,11 @@ export function HeroSection() {
           
           <div className="text-center mb-6 animate-in slide-in-from-top-4 duration-700">
             <h2 className="text-xl font-bold text-gray-900/60 tracking-tight mb-4">
-              Hello, <span className="text-gradient-gold">Traveler!</span>
+              Hello!
             </h2>
             <h1 className="flex flex-col items-center">
-              <span className="text-[5.5rem] font-black text-gray-900 tracking-[-0.06em] leading-[0.8]">Welcome</span>
-              <span className="text-[2.25rem] font-bold text-gray-900/80 tracking-tight mt-6">To</span>
+              <span className="text-[4.4rem] font-black text-gray-900 tracking-[-0.06em] leading-[0.8]">Welcome</span>
+              <span className="text-[2rem] font-bold text-gray-900/80 tracking-tight mt-6">To</span>
             </h1>
           </div>
 
