@@ -59,6 +59,7 @@ const INITIAL_USERS: User[] = [
     ecoContribution: 500,
     validUntil: new Date('2026-12-31'),
     createdAt: new Date('2024-01-01'),
+    wishlist: []
   }
 ]
 

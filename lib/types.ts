@@ -33,6 +33,7 @@ export interface User {
     interests?: string[] // ['hotels', 'activities', 'dining', 'water-sports', 'wellness']
     budgetRange?: 'budget' | 'moderate' | 'luxury' | 'ultra-luxury'
   }
+  wishlist?: string[]  // Array of offer IDs
 }
 
 export interface Partner {
@@ -56,8 +57,12 @@ export interface Offer {
   title: string
   description: string
   image: string
+  logo?: string
   discount: number
   isEliteExclusive?: boolean
+  originalPrice?: number
+  discountedPrice?: number
+  category?: string
 }
 
 export interface BookingRequest {

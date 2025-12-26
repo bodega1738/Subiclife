@@ -28,6 +28,7 @@ interface UserContextType {
   addPoints: (amount: number) => void
   updateUser: (data: Partial<User>) => void
   updatePreferences: (preferences: User['preferences']) => void
+  toggleWishlist: (offerId: string) => void
   logout: () => void
 }
 
@@ -127,6 +128,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       points: 1000,
       validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       createdAt: new Date(),
+      wishlist: [],
     }
     addUser(newUser)
   }
@@ -143,6 +145,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       ecoContribution: 500,
       validUntil: new Date('2026-12-31'),
       createdAt: new Date('2024-01-01'),
+      wishlist: [],
     }
     const existing = useMockDBStore.getState().users.find(u => u.id === demoUser.id)
     if (!existing) {
@@ -182,7 +185,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const updatePreferences = (preferences: User['preferences']) => {
     if (user) {
-      updateUser(user.id, { preferences })
+      updateProfile({ preferences })
+    }
+  }
+
+  const toggleWishlist = (offerId: string) => {
+    if (user) {
+      const currentWishlist = user.wishlist || []
+      const isInWishlist = currentWishlist.includes(offerId)
+
+      const updatedWishlist = isInWishlist
+        ? currentWishlist.filter((id) => id !== offerId) // Remove if exists
+        : [...currentWishlist, offerId] // Add if doesn't exist
+
+      updateProfile({ wishlist: updatedWishlist })
     }
   }
 
@@ -206,6 +222,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         addPoints,
         updateUser: updateProfile,
         updatePreferences,
+        toggleWishlist,
         logout,
       }}
     >

@@ -3,19 +3,44 @@
 import React from "react"
 import Link from "next/link"
 import { Search, Star, ArrowRight, Heart, MapPin, SlidersHorizontal, Crown } from "lucide-react"
-import { partners } from "@/lib/partners-data"
-import { useUser } from "@/lib/user-context"
+import { partners, featuredOffers, allOffers } from "@/lib/partners-data"
+import { useUser, discountPercentages } from "@/lib/user-context"
+import { TierBadge } from "@/components/ui/tier-badge"
+
+function getTimeBasedGreeting(): string {
+  const hour = new Date().getHours()
+  if (hour >= 5 && hour < 12) return "Good morning"
+  if (hour >= 12 && hour < 18) return "Good afternoon"
+  return "Good evening"
+}
+
+function getFirstName(fullName: string | undefined): string {
+  if (!fullName || fullName.trim() === "") return "Member"
+  const firstName = fullName.trim().split(' ')[0]
+  return firstName || "Member"
+}
+
+function isEligible(offer: any, tier: string): boolean {
+  // Non-elite users cannot see elite-exclusive offers
+  if (offer.isEliteExclusive && tier !== 'elite') {
+    return false
+  }
+  return true
+}
 
 export function HomeDashboard() {
-  const { user } = useUser()
-  
-  // Flatten all offers from all partners into a single list
-  const allOffers = partners.flatMap(partner => 
-    (partner.offers || []).map(offer => ({
-      ...partner,
-      currentOffer: offer
-    }))
-  )
+  const { user, toggleWishlist } = useUser()
+
+  const handleToggleWishlist = (e: React.MouseEvent, offerId: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    toggleWishlist(offerId)
+  }
+
+  function calculateUserDiscount(originalPrice: number, userTier: string): number {
+    const discountPercent = discountPercentages[userTier as keyof typeof discountPercentages] || 0
+    return originalPrice * (1 - discountPercent / 100)
+  }
 
   // Curate deals based on user interests
   const curatedPartners = React.useMemo(() => {
@@ -39,14 +64,12 @@ export function HomeDashboard() {
           <div className="flex justify-between items-start mb-8">
             <div>
               <h1 className="text-3xl font-sans text-gray-900 dark:text-white tracking-tight leading-tight">
-                Good morning,<br /><span className="font-bold">Alfred.</span>
+                {getTimeBasedGreeting()},<br />
+                <span className="font-bold">{getFirstName(user?.name)}.</span>
               </h1>
             </div>
             <div className="mt-1">
-              <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-black shadow-premium border border-gray-800">
-                <Crown className="w-3.5 h-3.5 text-subic-gold mr-1.5" />
-                <span className="text-[10px] font-bold text-white tracking-widest uppercase">Elite Member</span>
-              </div>
+              <TierBadge tier={user?.tier} />
             </div>
           </div>
           
@@ -77,8 +100,25 @@ export function HomeDashboard() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent/10"></div>
                 
                 {/* Category Badge */}
-                <div className="absolute top-5 right-5 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">
+                <div className="absolute top-5 left-5 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 z-20">
                   <span className="text-[10px] font-bold text-white tracking-wider uppercase">{partner.category}</span>
+                </div>
+
+                {/* Heart Icon for Carousel */}
+                <div className="absolute top-5 right-5 z-20">
+                  <button 
+                    onClick={(e) => handleToggleWishlist(e, partner.id)}
+                    className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 hover:bg-white/30 hover:scale-110 active:scale-95 transition-all group/heart"
+                    aria-label={user?.wishlist?.includes(partner.id) ? "Remove from wishlist" : "Add to wishlist"}
+                  >
+                    <Heart 
+                      className={`w-5 h-5 transition-all duration-300 ${
+                        user?.wishlist?.includes(partner.id) 
+                          ? "fill-red-500 text-red-500 scale-110" 
+                          : "text-white group-hover/heart:text-red-500"
+                      }`} 
+                    />
+                  </button>
                 </div>
                 
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -93,7 +133,7 @@ export function HomeDashboard() {
                   <div className="flex items-center justify-between mt-2">
                     <div>
                       <span className="text-[10px] text-gray-400 block uppercase tracking-widest mb-0.5">DISCOUNT</span>
-                      <span className="text-xl font-bold text-white">{partner.discount}% OFF</span>
+                      <span className="text-xl font-bold text-white">{discountPercentages[user?.tier || 'starter']}% OFF</span>
                     </div>
                     <button className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-100 transition-colors shadow-lg">
                       <ArrowRight className="w-5 h-5" />
@@ -107,56 +147,86 @@ export function HomeDashboard() {
         <div className="px-6">
           <div className="mb-5 flex justify-between items-end">
             <h2 className="text-xl font-sans font-bold tracking-tight text-gray-900 dark:text-white">Available Offers</h2>
-            <button className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition-colors">
-              <SlidersHorizontal className="w-5 h-5 text-gray-600" />
-            </button>
           </div>
-          <div className="space-y-4">
-            {allOffers.map((item, index) => (
-              <div key={`${item.id}-${index}`} className="bg-white/80 backdrop-blur-md dark:bg-card-dark rounded-[1.5rem] p-3 shadow-sm hover:shadow-md transition-all border border-gray-100/50 flex gap-4 h-36 items-center group cursor-pointer">
-                <div className="w-32 h-full flex-shrink-0 rounded-[1.2rem] overflow-hidden relative shadow-inner">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {allOffers.filter(offer => isEligible(offer, user?.tier || 'starter')).map((item, index) => (
+              <div key={`${item.id}-${index}`} className="relative h-[450px] rounded-3xl overflow-hidden shadow-premium group cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                {/* Background Image */}
+                <div className="absolute inset-0">
                   <img 
-                    alt={item.name} 
+                    alt={item.partnerName} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                     src={item.image || item.logo || "/placeholder.jpg"} 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-60"></div>
-                  <div className="absolute top-2.5 left-2.5 bg-white/95 backdrop-blur-sm px-2 py-0.5 rounded-full text-[10px] font-bold text-gray-900 tracking-wide border border-white/50 uppercase shadow-sm">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent/20"></div>
+                </div>
+
+                {/* Top Overlay Elements */}
+                <div className="absolute top-5 left-5 z-20">
+                  <div className="bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full text-[10px] font-bold text-gray-900 tracking-wide border border-white/50 uppercase shadow-sm">
                     {item.category}
                   </div>
                 </div>
-                <div className="flex-1 flex flex-col justify-between h-full py-1.5">
-                  <div>
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight font-sans line-clamp-1">{item.name}</h3>
-                      <Heart className="w-5 h-5 text-gray-300 hover:text-red-500 hover:fill-red-500 transition-colors cursor-pointer" />
+
+                <div className="absolute top-5 right-5 z-20 flex flex-col items-end gap-3">
+                  {/* Elite Exclusive Badge */}
+                  {item.isEliteExclusive && (
+                    <div className="bg-gradient-to-r from-[#D97706] to-[#F59E0B] px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+                      <Crown className="w-3.5 h-3.5 text-white" />
+                      <span className="text-[10px] font-bold text-white tracking-wider uppercase">Elite Only</span>
                     </div>
-                    <div className="flex items-center text-xs text-gray-500 mt-1.5">
-                      <MapPin className="w-3.5 h-3.5 mr-1 text-subic-blue" />
-                      <span className="truncate">Subic Bay</span>
-                    </div>
+                  )}
+
+                  {/* Heart Icon */}
+                  <button 
+                    onClick={(e) => handleToggleWishlist(e, item.id)}
+                    className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 hover:bg-white/30 hover:scale-110 active:scale-95 transition-all group/heart"
+                    aria-label={user?.wishlist?.includes(item.id) ? "Remove from wishlist" : "Add to wishlist"}
+                  >
+                    <Heart 
+                      className={`w-5 h-5 transition-all duration-300 ${
+                        user?.wishlist?.includes(item.id) 
+                          ? "fill-red-500 text-red-500 scale-110" 
+                          : "text-white group-hover/heart:text-red-500"
+                      }`} 
+                    />
+                  </button>
+                </div>
+
+                {/* Bottom Content Area */}
+                <div className="absolute bottom-0 left-0 right-0 p-7 z-10">
+                  <div className="flex items-center text-white/80 mb-2">
+                    <MapPin className="w-4 h-4 mr-1.5 text-subic-blue" />
+                    <span className="text-xs font-medium tracking-tight">Subic Bay</span>
                   </div>
                   
-                  {/* Offer Display */}
-                  <div className="mt-auto">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="px-2 py-0.5 bg-blue-50 rounded-md border border-blue-100">
-                        <span className="text-[10px] font-bold text-subic-blue line-clamp-1">
-                          {item.currentOffer}
-                        </span>
-                      </div>
+                  <h3 className="text-2xl font-bold text-white mb-3 tracking-tight font-sans line-clamp-1">{item.partnerName}</h3>
+                  
+                  {/* Offer Title Badge */}
+                  <div className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md border border-white/30 rounded-full mb-5">
+                    <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+                      {item.title}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-end justify-between">
+                    <div>
+                      {item.originalPrice && (
+                        <div className="flex flex-col mb-1">
+                          <span className="text-xs text-white/60 line-through mb-0.5">₱{item.originalPrice.toLocaleString()}</span>
+                          <span className="text-3xl font-bold text-white tracking-tight">
+                            ₱{calculateUserDiscount(item.originalPrice, user?.tier || 'starter').toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                      <p className="text-[10px] text-white/70 font-bold uppercase tracking-[0.15em] leading-none">
+                        {discountPercentages[user?.tier || 'starter']}% MEMBER DISCOUNT
+                      </p>
                     </div>
                     
-                    <div className="flex items-end justify-between mt-1">
-                      <div>
-                         <p className="text-[10px] text-gray-400 mt-1 font-medium uppercase tracking-wide">
-                           {item.discount}% MEMBER DISCOUNT
-                         </p>
-                      </div>
-                      <button className="bg-black text-white text-xs font-bold py-2.5 px-5 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all active:scale-95">
-                        Book
-                      </button>
-                    </div>
+                    <button className="bg-white text-black text-sm font-bold py-3.5 px-7 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 hover:scale-105 active:scale-95 transition-all duration-300">
+                      Book Now
+                    </button>
                   </div>
                 </div>
               </div>
