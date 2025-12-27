@@ -25,7 +25,11 @@ export const metadata: Metadata = {
   title: "Subic.Life - Your Gateway to Subic Bay",
   description:
     "Exclusive travel membership for Subic Bay. Sustainable luxury experiences, partner discounts, and premium concierge services.",
-    generator: 'v0.app'
+  generator: "v0.app",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/icon.png",
+  },
 }
 
 export const viewport: Viewport = {
