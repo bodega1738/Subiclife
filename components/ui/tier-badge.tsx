@@ -5,9 +5,10 @@ import { MembershipTier } from "@/lib/types"
 interface TierBadgeProps {
   tier: MembershipTier | undefined
   className?: string
+  size?: "sm" | "md" | "lg"
 }
 
-export function TierBadge({ tier, className }: TierBadgeProps) {
+export function TierBadge({ tier, className, size = "md" }: TierBadgeProps) {
   // Handle null/undefined tier by defaulting to starter
   const tierValue = tier || "starter"
   
@@ -31,16 +32,23 @@ export function TierBadge({ tier, className }: TierBadgeProps) {
     }
   }
 
+  const sizes = {
+    sm: "px-2 py-0.5 text-[10px]",
+    md: "px-3 py-1 text-xs",
+    lg: "px-4 py-1.5 text-sm"
+  }
+
   const style = tierStyles[tierValue]
   const tierLabel = tierValue.charAt(0).toUpperCase() + tierValue.slice(1)
 
   return (
     <div className={cn(
-      "inline-flex items-center px-3 py-1 rounded-full",
+      "inline-flex items-center rounded-full font-semibold",
       style.bg,
+      sizes[size],
       className
     )}>
-      <span className={`text-xs font-semibold ${style.text}`}>
+      <span className={cn(style.text)}>
         {tierLabel}
       </span>
     </div>
