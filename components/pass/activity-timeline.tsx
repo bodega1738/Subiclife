@@ -32,31 +32,31 @@ export function ActivityTimeline({ activities }: ActivityTimelineProps) {
 
   if (activities.length === 0) {
     return (
-      <div className="py-8 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-        <p className="text-sm text-gray-500">No recent activity found</p>
+      <div className="py-10 text-center bg-gray-50/80 backdrop-blur-sm rounded-2xl border border-dashed border-gray-200">
+        <p className="text-sm text-gray-500 font-medium">No recent activity found</p>
       </div>
     )
   }
 
   return (
-    <div className="relative space-y-6 before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-gray-100 before:via-gray-200 before:to-gray-100">
+    <div className="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-gray-100 before:via-gray-200 before:to-gray-100">
       {activities.map((activity, index) => {
         const config = getActivityIcon(activity.type)
         return (
           <div key={activity.id} className="relative flex items-start gap-4">
-            <div className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-4 border-white shadow-sm ${config.color}`}>
-              <config.icon className="h-4 w-4" />
+            <div className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-4 border-white shadow-lg ${config.color}`}>
+              <config.icon className="h-5 w-5" />
             </div>
             <div className="flex flex-col flex-1 pt-0.5">
               <div className="flex justify-between items-start gap-2">
-                <h4 className="text-sm font-semibold text-gray-900 leading-tight">
+                <h4 className="text-sm font-bold text-gray-900 leading-tight">
                   {activity.title}
                 </h4>
-                <span className="text-[10px] font-medium text-gray-400 whitespace-nowrap pt-0.5">
+                <span className="text-[10px] font-bold text-gray-400 whitespace-nowrap pt-0.5 uppercase tracking-wider">
                   {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
                 </span>
               </div>
-              <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+              <p className="text-xs text-gray-600 mt-1.5 line-clamp-2 leading-relaxed">
                 {activity.message}
               </p>
             </div>

@@ -1,22 +1,22 @@
 "use client"
 
 import { useState } from "react"
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
 } from "@/components/ui/dialog"
 import { Booking, Partner } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  MapPin, 
-  Phone, 
-  MessageSquare, 
+import {
+  Calendar,
+  Clock,
+  Users,
+  MapPin,
+  Phone,
+  MessageSquare,
   Info,
   CheckCircle2,
   Copy,
@@ -26,10 +26,14 @@ import {
   X,
   History,
   CalendarPlus,
-  Ban
+  Ban,
+  QrCode
 } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
+import { useUser } from "@/lib/user-context"
+import { MemberQRCode } from "@/components/pass/member-qr-code"
+import { BookingStatusTimeline } from "@/components/booking/booking-status-timeline"
 
 interface BookingDetailModalProps {
   isOpen: boolean
@@ -39,7 +43,9 @@ interface BookingDetailModalProps {
 
 export function BookingDetailModal({ isOpen, onClose, booking }: BookingDetailModalProps) {
   const { toast } = useToast()
-  
+  const { user } = useUser()
+  const [showQRCode, setShowQRCode] = useState(false)
+
   if (!booking) return null
 
   const copyToClipboard = (text: string) => {
@@ -73,7 +79,7 @@ export function BookingDetailModal({ isOpen, onClose, booking }: BookingDetailMo
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden border-none max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden border-none max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="relative h-48 w-full bg-slate-100">
           <Image
             src={booking.partner?.logo || '/placeholder.jpg'}
@@ -96,61 +102,63 @@ export function BookingDetailModal({ isOpen, onClose, booking }: BookingDetailMo
           </div>
         </div>
 
-        <div className="p-6 space-y-6">
-          <div className="flex justify-between items-start">
-            <div className="space-y-1">
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Booking Status</p>
-              <Badge className={`${statusConfig.className} px-2 py-0.5 rounded-full border-none`}>
+        <div className="p-6 space-y-8 relative">
+          {/* Northern Lights gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#135bec]/5 via-transparent to-[#10B981]/5 pointer-events-none" />
+          <div className="relative z-10 flex justify-between items-start">
+            <div className="space-y-2">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Booking Status</p>
+              <Badge className={`${statusConfig.className} px-3 py-1 rounded-full border-none font-bold text-xs backdrop-blur-sm`}>
                 {statusConfig.label}
               </Badge>
             </div>
-            <div className="text-right space-y-1">
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Reference</p>
-              <button 
+            <div className="text-right space-y-2">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Reference</p>
+              <button
                 onClick={() => copyToClipboard(booking.id)}
-                className="flex items-center gap-1.5 text-sm font-mono text-slate-900 hover:text-[#0A74DA] transition-colors"
+                className="flex items-center gap-1.5 text-sm font-mono font-bold text-slate-900 hover:text-[#135bec] transition-all duration-300 hover:scale-105"
               >
                 {booking.id.slice(0, 12).toUpperCase()}
-                <Copy className="h-3 w-3" />
+                <Copy className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+          <div className="relative z-10 grid grid-cols-2 gap-4">
+            <div className="p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-100/50 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
-                <Calendar className="h-4 w-4 text-slate-400" />
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Date</span>
+                <Calendar className="h-4 w-4 text-[#135bec]" />
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Date</span>
               </div>
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-bold text-slate-900">
                 {booking.booking_details.date || booking.booking_details.check_in || 'No date set'}
               </p>
             </div>
             {booking.booking_type === 'hotel' ? (
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-100/50 shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
-                  <Calendar className="h-4 w-4 text-slate-400" />
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Check-out</span>
+                  <Calendar className="h-4 w-4 text-[#135bec]" />
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Check-out</span>
                 </div>
-                <p className="text-sm font-semibold text-slate-900">{booking.booking_details.check_out}</p>
+                <p className="text-sm font-bold text-slate-900">{booking.booking_details.check_out}</p>
               </div>
             ) : (
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-100/50 shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
-                  <Clock className="h-4 w-4 text-slate-400" />
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Time</span>
+                  <Clock className="h-4 w-4 text-[#135bec]" />
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Time</span>
                 </div>
-                <p className="text-sm font-semibold text-slate-900">{booking.booking_details.time || 'N/A'}</p>
+                <p className="text-sm font-bold text-slate-900">{booking.booking_details.time || 'N/A'}</p>
               </div>
             )}
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Info className="h-4 w-4 text-[#0A74DA]" />
+          <div className="relative z-10 space-y-4">
+            <h3 className="text-[10px] font-bold text-slate-900 uppercase tracking-[0.2em] flex items-center gap-2">
+              <Info className="h-4 w-4 text-[#135bec]" />
               Booking Information
             </h3>
-            <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div className="space-y-3 bg-white/60 backdrop-blur-md p-5 rounded-2xl border border-slate-100/50 shadow-sm">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-slate-500">Booking Type</span>
                 <span className="font-semibold text-slate-900 capitalize">{booking.booking_type}</span>
@@ -166,8 +174,8 @@ export function BookingDetailModal({ isOpen, onClose, booking }: BookingDetailMo
               </div>
               {booking.booking_details.special_requests && (
                 <div className="pt-3 border-t border-slate-200 mt-2">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Special Requests</span>
-                  <p className="text-xs text-slate-600 bg-yellow-50 p-2 rounded-lg border border-yellow-100 italic">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] block mb-2">Special Requests</span>
+                  <p className="text-xs text-slate-600 bg-yellow-50/80 backdrop-blur-sm p-3 rounded-2xl border border-yellow-100 italic leading-relaxed">
                     "{booking.booking_details.special_requests}"
                   </p>
                 </div>
@@ -175,97 +183,89 @@ export function BookingDetailModal({ isOpen, onClose, booking }: BookingDetailMo
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-[#0A74DA]" />
+          <div className="relative z-10 space-y-4">
+            <h3 className="text-[10px] font-bold text-slate-900 uppercase tracking-[0.2em] flex items-center gap-2">
+              <CreditCard className="h-4 w-4 text-[#135bec]" />
               Payment Summary
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-3 bg-white/60 backdrop-blur-md p-5 rounded-2xl border border-slate-100/50 shadow-sm">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-slate-500">Standard Price</span>
-                <span className="text-slate-900">₱{booking.total_amount.toLocaleString()}</span>
+                <span className="text-slate-900 font-medium">₱{booking.total_amount.toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-slate-500">Member Discount</span>
-                <span className="text-green-600">-₱{booking.discount_amount.toLocaleString()}</span>
+                <span className="text-green-600 font-medium">-₱{booking.discount_amount.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-slate-100">
-                <span className="text-base font-bold text-slate-900">Total Charged</span>
-                <span className="text-base font-bold text-[#0A74DA]">₱{booking.final_amount.toLocaleString()}</span>
+              <div className="flex justify-between items-center pt-3 border-t border-slate-100">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Total Charged</span>
+                <span className="text-lg font-black text-[#135bec]">₱{booking.final_amount.toLocaleString()}</span>
               </div>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <History className="h-4 w-4 text-[#0A74DA]" />
+          <div className="relative z-10 space-y-4">
+            <h3 className="text-[10px] font-bold text-slate-900 uppercase tracking-[0.2em] flex items-center gap-2">
+              <History className="h-4 w-4 text-[#135bec]" />
               Booking Timeline
             </h3>
-            <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100">
-              <div className="relative">
-                <div className="absolute -left-[22px] top-1 h-3 w-3 rounded-full bg-[#0A74DA] ring-4 ring-white" />
-                <p className="text-xs font-bold text-slate-900">Requested</p>
-                <p className="text-[10px] text-slate-500">{new Date(booking.created_at).toLocaleDateString()} at {new Date(booking.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-              </div>
-              {(booking.status === 'confirmed' || booking.status === 'completed') && (
-                <div className="relative">
-                  <div className="absolute -left-[22px] top-1 h-3 w-3 rounded-full bg-green-500 ring-4 ring-white" />
-                  <p className="text-xs font-bold text-slate-900">Confirmed</p>
-                  <p className="text-[10px] text-slate-500">Partner has approved your request</p>
-                </div>
-              )}
-              {booking.status === 'completed' && (
-                <div className="relative">
-                  <div className="absolute -left-[22px] top-1 h-3 w-3 rounded-full bg-green-500 ring-4 ring-white" />
-                  <p className="text-xs font-bold text-slate-900">Checked In / Completed</p>
-                  <p className="text-[10px] text-slate-500">Service rendered and finalized</p>
-                </div>
-              )}
-              {booking.status === 'cancelled' && (
-                <div className="relative">
-                  <div className="absolute -left-[22px] top-1 h-3 w-3 rounded-full bg-red-500 ring-4 ring-white" />
-                  <p className="text-xs font-bold text-slate-900">Cancelled</p>
-                  <p className="text-[10px] text-slate-500">Booking was cancelled</p>
-                </div>
-              )}
-            </div>
+            <BookingStatusTimeline booking={booking} />
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-[#0A74DA]" />
+          <div className="relative z-10 space-y-4">
+            <h3 className="text-[10px] font-bold text-slate-900 uppercase tracking-[0.2em] flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-[#135bec]" />
               Utility Actions
             </h3>
-            <div className="grid grid-cols-2 gap-2">
-              <Button variant="outline" className="h-10 rounded-xl gap-2 text-xs border-slate-200" onClick={() => toast({ title: "Coming Soon", description: "Add to Calendar will be available soon." })}>
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="outline" className="h-12 rounded-full gap-2 text-xs font-bold border-2 border-slate-200 hover:scale-105 active:scale-95 transition-all duration-300" onClick={() => toast({ title: "Coming Soon", description: "Add to Calendar will be available soon." })}>
                 <CalendarPlus className="h-4 w-4" />
                 Add to Calendar
               </Button>
-              <Button variant="outline" className="h-10 rounded-xl gap-2 text-xs border-slate-200" onClick={() => toast({ title: "Contact Support", description: "Connecting to support chat..." })}>
+              <Button variant="outline" className="h-12 rounded-full gap-2 text-xs font-bold border-2 border-slate-200 hover:scale-105 active:scale-95 transition-all duration-300" onClick={() => toast({ title: "Contact Support", description: "Connecting to support chat..." })}>
                 <MessageSquare className="h-4 w-4" />
                 Contact Support
               </Button>
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 pt-4">
-            <div className="grid grid-cols-2 gap-2">
-              <Button className="h-12 bg-[#0A74DA] hover:bg-[#0861b5] rounded-xl gap-2 text-xs">
+          <div className="relative z-10 flex flex-col gap-3 pt-4">
+            {/* Show QR Code button for confirmed bookings */}
+            {booking.status === 'confirmed' && (
+              <Button
+                onClick={() => setShowQRCode(true)}
+                className="h-12 w-full bg-gradient-to-r from-[#135bec] to-[#0e45b5] hover:from-[#0e45b5] hover:to-[#0a3696] rounded-full gap-2 text-sm font-bold shadow-lg shadow-blue-200/50 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
+              >
+                <QrCode className="h-5 w-5" />
+                Show Check-in QR Code
+              </Button>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <Button className="h-12 bg-gradient-to-r from-[#135bec] to-[#0e45b5] hover:from-[#0e45b5] hover:to-[#0a3696] rounded-full gap-2 text-xs font-bold shadow-lg shadow-blue-200/50 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300">
                 <MapPin className="h-4 w-4" />
                 Directions
               </Button>
-              <Button variant="outline" className="h-12 rounded-xl gap-2 text-xs border-slate-200">
+              <Button variant="outline" className="h-12 rounded-full gap-2 text-xs font-bold border-2 border-slate-200 hover:scale-105 active:scale-95 transition-all duration-300">
                 <Phone className="h-4 w-4" />
                 Call Partner
               </Button>
             </div>
-            <Button variant="outline" className="h-12 w-full rounded-xl gap-2 text-xs border-slate-200 text-slate-600">
+            <Button variant="outline" className="h-12 w-full rounded-full gap-2 text-xs font-bold border-2 border-slate-200 text-slate-600 hover:scale-105 active:scale-95 transition-all duration-300">
               <ExternalLink className="h-4 w-4" />
               Download Confirmation
             </Button>
           </div>
         </div>
       </DialogContent>
+
+      {/* Member QR Code Modal */}
+      <MemberQRCode
+        isOpen={showQRCode}
+        onClose={() => setShowQRCode(false)}
+        user={user}
+        booking={booking}
+      />
     </Dialog>
   )
 }

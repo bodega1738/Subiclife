@@ -18,7 +18,7 @@ export default function ConciergePage() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <div className="min-h-screen bg-[#f6f6f8] pb-20">
       <ConciergeChat />
     </div>
   )

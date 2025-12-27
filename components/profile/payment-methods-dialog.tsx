@@ -70,7 +70,7 @@ export function PaymentMethodsDialog({ open, onOpenChange }: PaymentMethodsDialo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] rounded-3xl shadow-premium border-none">
         <DialogHeader>
           <DialogTitle>Payment Methods</DialogTitle>
           <DialogDescription>
@@ -83,10 +83,10 @@ export function PaymentMethodsDialog({ open, onOpenChange }: PaymentMethodsDialo
             {methods.map((method) => (
               <div
                 key={method.id}
-                className="flex items-center justify-between p-4 bg-white rounded-xl border shadow-sm"
+                className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium hover:shadow-xl transition-all"
               >
                 <div className="flex items-center gap-4">
-                  <div className="p-2 bg-gray-50 rounded-lg">
+                  <div className="p-3 bg-gray-50 rounded-2xl shadow-sm">
                     <CreditCard className="h-6 w-6 text-gray-600" />
                   </div>
                   <div>
@@ -99,7 +99,7 @@ export function PaymentMethodsDialog({ open, onOpenChange }: PaymentMethodsDialo
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                  className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full hover:shadow-md transition-all"
                   onClick={() => handleDelete(method.id)}
                 >
                   <Trash2 className="h-5 w-5" />
@@ -109,7 +109,7 @@ export function PaymentMethodsDialog({ open, onOpenChange }: PaymentMethodsDialo
 
             <Button
               variant="outline"
-              className="w-full h-12 border-dashed border-2 text-gray-600 hover:text-blue-600 hover:border-blue-600"
+              className="w-full h-12 border-dashed border-2 text-gray-600 hover:text-subic-blue hover:border-subic-blue rounded-full shadow-premium hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
               onClick={() => setIsAdding(true)}
             >
               <Plus className="mr-2 h-5 w-5" />
@@ -120,7 +120,7 @@ export function PaymentMethodsDialog({ open, onOpenChange }: PaymentMethodsDialo
           <form onSubmit={handleAdd} className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="cardHolder">Cardholder Name</Label>
-              <Input id="cardHolder" name="cardHolder" placeholder="John Doe" required />
+              <Input id="cardHolder" name="cardHolder" placeholder="John Doe" className="rounded-2xl shadow-sm focus:shadow-md transition-all" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="cardNumber">Card Number</Label>
@@ -129,29 +129,30 @@ export function PaymentMethodsDialog({ open, onOpenChange }: PaymentMethodsDialo
                 name="cardNumber"
                 placeholder="0000 0000 0000 0000"
                 maxLength={16}
+                className="rounded-2xl shadow-sm focus:shadow-md transition-all"
                 required
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="expiry">Expiry (MM/YY)</Label>
-                <Input id="expiry" name="expiry" placeholder="MM/YY" maxLength={5} required />
+                <Input id="expiry" name="expiry" placeholder="MM/YY" maxLength={5} className="rounded-2xl shadow-sm focus:shadow-md transition-all" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cvv">CVV</Label>
-                <Input id="cvv" name="cvv" placeholder="000" maxLength={3} required />
+                <Input id="cvv" name="cvv" placeholder="000" maxLength={3} className="rounded-2xl shadow-sm focus:shadow-md transition-all" required />
               </div>
             </div>
-            <div className="flex gap-2 pt-4">
+            <div className="flex gap-4 pt-4">
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1"
+                className="flex-1 rounded-full shadow-sm hover:shadow-md transition-all"
                 onClick={() => setIsAdding(false)}
               >
                 Cancel
               </Button>
-              <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+              <Button type="submit" className="flex-1 bg-subic-blue hover:bg-blue-700 rounded-full shadow-premium hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -167,7 +168,7 @@ export function PaymentMethodsDialog({ open, onOpenChange }: PaymentMethodsDialo
 
         <DialogFooter>
           {!isAdding && (
-            <Button variant="secondary" onClick={() => onOpenChange(false)} className="w-full">
+            <Button variant="secondary" onClick={() => onOpenChange(false)} className="w-full rounded-full shadow-premium hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all">
               Close
             </Button>
           )}

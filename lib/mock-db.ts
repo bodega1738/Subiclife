@@ -82,6 +82,123 @@ const INITIAL_BOOKINGS: Booking[] = [
     discount_amount: 3750,
     final_amount: 11250,
     created_at: new Date().toISOString(),
+  },
+  {
+    id: 'booking-2',
+    user_id: 'alfred-id',
+    partner_id: 'all-hands-beach',
+    booking_type: 'restaurant',
+    booking_details: {
+      date: '2025-12-28',
+      time: '18:30',
+      party_size: 4,
+      special_requests: 'Window seat with ocean view'
+    },
+    status: 'confirmed',
+    payment_status: 'pending',
+    total_amount: 5000,
+    discount_amount: 1250,
+    final_amount: 3750,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    confirmed_at: new Date(Date.now() - 43200000).toISOString(),
+  },
+  {
+    id: 'booking-3',
+    user_id: 'alfred-id',
+    partner_id: 'subic-yacht',
+    booking_type: 'yacht',
+    booking_details: {
+      date: '2025-12-30',
+      duration: '3hr',
+      passengers: 6,
+      special_requests: 'Sunset cruise with champagne'
+    },
+    status: 'counter_offer_sent',
+    payment_status: 'pending',
+    total_amount: 25000,
+    discount_amount: 6250,
+    final_amount: 18750,
+    created_at: new Date(Date.now() - 172800000).toISOString(),
+  },
+  {
+    id: 'booking-4',
+    user_id: 'alfred-id',
+    partner_id: 'jet-ski-subic',
+    booking_type: 'activity',
+    booking_details: {
+      date: '2025-12-22',
+      participants: 2,
+      special_requests: ''
+    },
+    status: 'completed',
+    payment_status: 'paid',
+    total_amount: 3500,
+    discount_amount: 875,
+    final_amount: 2625,
+    created_at: new Date(Date.now() - 604800000).toISOString(),
+    confirmed_at: new Date(Date.now() - 518400000).toISOString(),
+  }
+]
+
+const INITIAL_NOTIFICATIONS: Notification[] = [
+  {
+    id: 'notif-1',
+    user_id: 'alfred-id',
+    partner_id: 'all-hands-beach',
+    type: 'booking_confirmed',
+    title: 'Booking Confirmed!',
+    message: 'Your reservation at All Hands Beach Resort has been confirmed for Dec 28.',
+    read: false,
+    created_at: new Date(Date.now() - 43200000).toISOString()
+  },
+  {
+    id: 'notif-2',
+    user_id: 'alfred-id',
+    partner_id: 'subic-yacht',
+    type: 'counter_offer',
+    title: 'Counter-Offer Received',
+    message: 'Subic Yacht Club has a suggestion regarding your booking request.',
+    read: false,
+    created_at: new Date(Date.now() - 86400000).toISOString()
+  },
+  {
+    id: 'notif-3',
+    user_id: 'alfred-id',
+    partner_id: 'jet-ski-subic',
+    type: 'check_in',
+    title: 'Check-in Successful!',
+    message: 'You checked in at Jet Ski Subic and earned 100 points!',
+    read: true,
+    created_at: new Date(Date.now() - 518400000).toISOString()
+  },
+  {
+    id: 'notif-4',
+    user_id: 'alfred-id',
+    partner_id: 'jet-ski-subic',
+    type: 'booking_confirmed',
+    title: 'Booking Confirmed',
+    message: 'Your jet ski session has been confirmed. You earned 500 points!',
+    read: true,
+    created_at: new Date(Date.now() - 604800000).toISOString()
+  }
+]
+
+const INITIAL_COUNTER_OFFERS: CounterOffer[] = [
+  {
+    id: 'counter-offer-1',
+    booking_id: 'booking-3',
+    partner_id: 'subic-yacht',
+    offer_details: {
+      date: '2025-12-31',
+      time_slot: '16:00',
+      duration: '4hr',
+      vessel: 'Luxury Yacht',
+      add_ons: ['Premium catering', 'Photographer'],
+      weather_backup_date: '2026-01-01'
+    },
+    merchant_note: 'Hi! Dec 30 is fully booked, but we have a better option - our New Year\'s Eve sunset cruise on Dec 31! We\'ll upgrade you to our luxury yacht with 4 hours instead of 3, plus complimentary catering and a photographer to capture the moment!',
+    status: 'pending',
+    created_at: new Date(Date.now() - 86400000).toISOString()
   }
 ]
 
@@ -95,8 +212,8 @@ export const useMockDBStore = create<MockDBStore>()(
         users: INITIAL_USERS,
         partners: partnersData,
         bookings: INITIAL_BOOKINGS,
-        notifications: [],
-        counter_offers: [],
+        notifications: INITIAL_NOTIFICATIONS,
+        counter_offers: INITIAL_COUNTER_OFFERS,
         merchant_session: null,
         _subscribers: [],
 

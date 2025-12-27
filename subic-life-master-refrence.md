@@ -443,17 +443,10 @@ await supabase.rpc('add_points', {
   - Total (large, bold)
 - Free cancellation policy note
 
-**Step 6: Payment Options**
-- Radio buttons for 3 options:
-  1. Pay full amount now (card/GCash/Maya)
-  2. Pay deposit now (₱2,000), rest on arrival
-  3. Pay on arrival (no payment now)
-- If "Pay now" selected:
-  - Payment method tabs (Card | GCash | Maya)
-  - Card fields: Number, Expiry, CVV, Name
-  - All fields h-12, rounded corners
-  - 🔒 "Secured by Stripe" badge (visual only, no real processing)
-- Note: Payment is SIMULATED for demo (no real charges)
+**Step 6: Submit Request**
+- "Send Request" button
+- Loading spinner while submitting
+- Note: No payment at this stage - payment options are presented AFTER merchant accepts
 
 **Step 7: Success**
 - ✅ Large green checkmark (animated scale)
@@ -467,7 +460,7 @@ await supabase.rpc('add_points', {
 **Navigation:**
 - Progress indicator shows "Step X of 7"
 - Back button (except on step 1)
-- Next button (changes to "Submit" on step 6)
+- Next button (changes to "Send Request" on step 6)
 - Close X (top-right, shows confirmation dialog)
 
 **Data Actions:**
@@ -476,8 +469,17 @@ await supabase.rpc('add_points', {
 - Creates notification for merchant
 - Awards 500 points to user (if booking accepted later)
 
+**Post-Acceptance Payment Flow:**
+When merchant accepts the booking:
+1. User receives notification: "Your booking has been accepted!"
+2. User opens booking details from My Pass
+3. User chooses payment method:
+   - Pay via app (GCash/Maya/Card) → Opens payment modal
+   - Pay in person → Status updated to "pay_on_arrival"
+4. Payment status tracked: pending → paid OR pay_on_arrival
+
 **Does NOT Have:**
-- Real payment processing (it's mocked)
+- Payment during initial request (payment is post-acceptance)
 - Instant confirmation (merchant must approve)
 - Price comparison with other sites
 - Loyalty program integration beyond points
@@ -578,19 +580,34 @@ await supabase.rpc('add_points', {
 - Weather backup plan note
 - Pricing breakdown (package + add-ons - discount = total)
 
-**Step 6: Payment**
-- Same 3 options as hotel booking
-- If paying: Card/GCash/Maya forms
+**Step 6: Submit Request**
+- "Send Request" button
+- Loading spinner while submitting
+- Note: No payment at this stage - payment options are presented AFTER merchant accepts
 
 **Step 7: Success**
-- ✅ "Cruise Booked!"
-- Meeting point address
-- "What to bring" checklist:
-  - Sunscreen, Swimwear, Valid ID, Membership card
-- "Get Directions" button
-- "Contact Captain" button (WhatsApp link)
+- ✅ "Request Sent!"
+- Message: "Partner will review your request"
+- Expected response time: "Usually within 2 hours"
+- Booking reference number
+- "View Booking" button → Goes to My Pass
+- "Return Home" button
+
+**Post-Acceptance Payment Flow:**
+When merchant accepts the booking:
+1. User receives notification: "Your booking has been accepted!"
+2. User opens booking details from My Pass
+3. User chooses payment method:
+   - Pay via app (GCash/Maya/Card) → Opens payment modal
+   - Pay in person → Status updated to "pay_on_arrival"
+4. Confirmed booking shows:
+   - Meeting point address
+   - "What to bring" checklist: Sunscreen, Swimwear, Valid ID, Membership card
+   - "Get Directions" button
+   - "Contact Captain" button (WhatsApp link)
 
 **Does NOT Have:**
+- Payment during initial request (payment is post-acceptance)
 - Real-time availability (merchant confirms)
 - Weather API integration (just mock warnings)
 - GPS tracking of vessel
@@ -649,19 +666,36 @@ await supabase.rpc('add_points', {
 - Note: "Arrive 15 minutes early"
 - Pricing (per person × count - discount = total)
 
-**Step 6: Payment**
-- Same options as hotel
+**Step 6: Submit Request**
+- "Send Request" button
+- Loading spinner while submitting
+- Note: No payment at this stage - payment options are presented AFTER merchant accepts
 
 **Step 7: Success**
-- ✅ "Adventure Booked!"
-- QR code for check-in
-- "Show this at activity center"
-- What to bring list
-- Weather cancellation policy
-- Emergency contact number
-- "Get Directions" button
+- ✅ "Request Sent!"
+- Message: "Partner will review your request"
+- Expected response time: "Usually within 2 hours"
+- Booking reference number
+- "View Booking" button → Goes to My Pass
+- "Return Home" button
+
+**Post-Acceptance Payment Flow:**
+When merchant accepts the booking:
+1. User receives notification: "Your booking has been accepted!"
+2. User opens booking details from My Pass
+3. User chooses payment method:
+   - Pay via app (GCash/Maya/Card) → Opens payment modal
+   - Pay in person → Status updated to "pay_on_arrival"
+4. Confirmed booking shows:
+   - QR code for check-in
+   - "Show this at activity center"
+   - What to bring list
+   - Weather cancellation policy
+   - Emergency contact number
+   - "Get Directions" button
 
 **Does NOT Have:**
+- Payment during initial request (payment is post-acceptance)
 - Digital waiver signing with stylus (just typed name)
 - Medical form upload (simplified to checkboxes)
 - Group booking discounts (fixed per-person pricing)
@@ -1849,19 +1883,20 @@ await supabase.from('partners')
     - Enters passengers (4 people)
     - Adds catering add-on (+₱2,000)
     - Reviews booking summary
-    - Selects "Pay deposit now" (₱2,000)
-    - Enters GCash number
-    - Submits request
+    - Taps "Send Request"
 17. Success screen: "Booking Request Sent!" with reference #SL-2024-1234
-18. Maria receives confirmation email
+18. Maria receives confirmation email (request pending)
 19. Notification bell shows red dot
 20. After 30 minutes: Push notification "Your booking is confirmed!"
-21. Maria opens app → Goes to My Pass → Sees booking under "Upcoming"
-22. Day of cruise: Shows QR code at La Banca marina
-23. Staff scans QR → Verifies Maria is on Registration tier
-24. Maria pays ₱6,375 (with 5% Registration discount)
-25. After trip: +500 points added to account
-26. Maria now has 1,500 points (needs 3,500 more for Basic tier)
+21. Maria opens app → Goes to My Pass → Sees booking under "Upcoming" with "Pay Now" option
+22. Maria chooses payment method:
+    - Option A: Taps "Pay Now" → Opens GCash payment modal → Pays deposit (₱2,000)
+    - Option B: Selects "Pay in Person" → Status changes to "pay_on_arrival"
+23. Day of cruise: Shows QR code at La Banca marina
+24. Staff scans QR → Verifies Maria is on Registration tier
+25. If pay_on_arrival: Maria pays ₱6,375 (with 5% Registration discount)
+26. After trip: +500 points added to account
+27. Maria now has 1,500 points (needs 3,500 more for Basic tier)
 
 **Alternative Path 1: Using Concierge**
 - Step 12: Instead of browsing, taps "Concierge" tab

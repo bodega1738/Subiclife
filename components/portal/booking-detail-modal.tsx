@@ -92,33 +92,35 @@ export function BookingDetailModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl bg-white p-6 shadow-xl sm:rounded-2xl">
+        <DialogContent className="max-w-2xl bg-white p-6 shadow-2xl sm:rounded-3xl border-0 animate-in fade-in slide-in-from-bottom-4 duration-500 relative overflow-hidden">
+          {/* Northern Lights gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#135bec]/5 via-transparent to-[#10B981]/5 rounded-3xl pointer-events-none" />
           <DialogHeader className="sr-only">
             <DialogTitle>Booking Details</DialogTitle>
             <DialogDescription>Review booking request details</DialogDescription>
           </DialogHeader>
 
           {/* Member Card Section */}
-          <div className="flex items-start gap-4 border-b pb-4">
-            <Avatar className="h-16 w-16">
+          <div className="relative z-10 flex items-start gap-4 border-b border-gray-100 pb-6">
+            <Avatar className="h-16 w-16 border-4 border-white shadow-lg">
               <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${booking.user?.name}`} />
               <AvatarFallback>{booking.user?.name?.substring(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
-            <div className="flex-1 space-y-1">
+            <div className="flex-1 space-y-2">
               <div className="flex items-center gap-2">
                 <h3 className="text-xl font-bold text-gray-900">{booking.user?.name}</h3>
-                <Badge className={cn("uppercase", getTierColor(booking.user?.tier))}>
+                <Badge className={cn("uppercase text-[9px] font-bold px-2.5 py-0.5 rounded-full tracking-[0.1em]", getTierColor(booking.user?.tier))}>
                   {booking.user?.tier || "Basic"}
                 </Badge>
               </div>
               <p className="text-sm text-gray-500">
                 Member since {booking.user?.createdAt ? format(new Date(booking.user.createdAt), "MMM yyyy") : "N/A"} • {booking.user?.points || 0} points
               </p>
-              <div className="flex gap-3 pt-1">
-                <span className="flex items-center gap-1 text-sm text-green-600">
+              <div className="flex gap-4 pt-1">
+                <span className="flex items-center gap-1.5 text-sm text-green-600 font-medium">
                   <CheckCircle className="h-4 w-4" /> Verified
                 </span>
-                <span className="flex items-center gap-1 text-sm text-blue-600">
+                <span className="flex items-center gap-1.5 text-sm text-blue-600 font-medium">
                   <Shield className="h-4 w-4" /> ₱{booking.user?.insuranceAmount || 0}M Coverage
                 </span>
               </div>
@@ -126,29 +128,29 @@ export function BookingDetailModal({
           </div>
 
           {/* Booking Details Section */}
-          <div className="grid grid-cols-2 gap-4 py-4">
+          <div className="relative z-10 grid grid-cols-2 gap-6 py-6">
             <div className="col-span-2">
-              <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Package</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-1">Package</p>
               <p className="text-lg font-bold text-gray-900">{booking.booking_details.package_name || "Standard Booking"}</p>
             </div>
 
             {booking.booking_type === 'hotel' && (
               <>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Check-in</p>
-                  <p className="text-base text-gray-900">{booking.booking_details.check_in}</p>
+                <div className="bg-white/60 backdrop-blur-md rounded-2xl p-4 border border-gray-100/50">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-1">Check-in</p>
+                  <p className="text-base font-semibold text-gray-900">{booking.booking_details.check_in}</p>
                 </div>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Check-out</p>
-                  <p className="text-base text-gray-900">{booking.booking_details.check_out}</p>
+                <div className="bg-white/60 backdrop-blur-md rounded-2xl p-4 border border-gray-100/50">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-1">Check-out</p>
+                  <p className="text-base font-semibold text-gray-900">{booking.booking_details.check_out}</p>
                 </div>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Room Type</p>
-                  <p className="text-base text-gray-900">{booking.booking_details.room_type}</p>
+                <div className="bg-white/60 backdrop-blur-md rounded-2xl p-4 border border-gray-100/50">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-1">Room Type</p>
+                  <p className="text-base font-semibold text-gray-900">{booking.booking_details.room_type}</p>
                 </div>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Guests</p>
-                  <p className="text-base text-gray-900">
+                <div className="bg-white/60 backdrop-blur-md rounded-2xl p-4 border border-gray-100/50">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-1">Guests</p>
+                  <p className="text-base font-semibold text-gray-900">
                     {booking.booking_details.guests?.adults} Adults, {booking.booking_details.guests?.children} Children
                   </p>
                 </div>
@@ -157,17 +159,17 @@ export function BookingDetailModal({
 
             {booking.booking_type === 'restaurant' && (
               <>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Date</p>
-                  <p className="text-base text-gray-900">{booking.booking_details.date}</p>
+                <div className="bg-white/60 backdrop-blur-md rounded-2xl p-4 border border-gray-100/50">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-1">Date</p>
+                  <p className="text-base font-semibold text-gray-900">{booking.booking_details.date}</p>
                 </div>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Time</p>
-                  <p className="text-base text-gray-900">{booking.booking_details.time}</p>
+                <div className="bg-white/60 backdrop-blur-md rounded-2xl p-4 border border-gray-100/50">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-1">Time</p>
+                  <p className="text-base font-semibold text-gray-900">{booking.booking_details.time}</p>
                 </div>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Party Size</p>
-                  <p className="text-base text-gray-900">{booking.booking_details.party_size} People</p>
+                <div className="col-span-2 bg-white/60 backdrop-blur-md rounded-2xl p-4 border border-gray-100/50">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-1">Party Size</p>
+                  <p className="text-base font-semibold text-gray-900">{booking.booking_details.party_size} People</p>
                 </div>
               </>
             )}
@@ -176,17 +178,17 @@ export function BookingDetailModal({
           </div>
 
           {/* Pricing Breakdown */}
-          <div className="rounded-lg border bg-gray-50 p-4">
-            <div className="space-y-2">
+          <div className="relative z-10 rounded-3xl border border-gray-100 bg-white/60 backdrop-blur-md p-6 shadow-sm">
+            <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Package Rate</span>
-                <span>₱{booking.total_amount.toLocaleString()}</span>
+                <span className="font-medium">₱{booking.total_amount.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm text-red-600">
                 <span>Discount ({discountPercent}%)</span>
-                <span>-₱{booking.discount_amount.toLocaleString()}</span>
+                <span className="font-medium">-₱{booking.discount_amount.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between border-t pt-2 text-sm font-semibold text-green-600">
+              <div className="flex justify-between border-t border-gray-100 pt-3 text-sm font-semibold text-green-600">
                 <span>Subtotal</span>
                 <span>₱{booking.final_amount.toLocaleString()}</span>
               </div>
@@ -194,8 +196,8 @@ export function BookingDetailModal({
                 <span>Commission ({Math.round(commissionRate * 100)}%)</span>
                 <span>-₱{commission.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between border-t pt-3">
-                <span className="text-xs font-bold uppercase text-gray-500">Your Net</span>
+              <div className="flex justify-between border-t border-gray-100 pt-4">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Your Net</span>
                 <span className="text-2xl font-black text-gray-900">₱{netAmount.toLocaleString()}</span>
               </div>
             </div>
@@ -203,36 +205,39 @@ export function BookingDetailModal({
 
           {/* Special Requests */}
           {booking.booking_details.special_requests && (
-            <div className="rounded-r border-l-4 border-yellow-400 bg-yellow-50 p-3">
-              <div className="flex items-start gap-2">
-                <AlertCircle className="mt-0.5 h-4 w-4 text-yellow-600" />
-                <p className="text-sm italic text-gray-700">{booking.booking_details.special_requests}</p>
+            <div className="relative z-10 rounded-2xl border-l-4 border-yellow-400 bg-yellow-50/80 backdrop-blur-sm p-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="mt-0.5 h-5 w-5 text-yellow-600" />
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-yellow-700 mb-1">Special Request</p>
+                  <p className="text-sm italic text-gray-700 leading-relaxed">{booking.booking_details.special_requests}</p>
+                </div>
               </div>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-6">
-            <Button 
+          <div className="relative z-10 flex gap-3 pt-6">
+            <Button
               onClick={() => setShowAcceptModal(true)}
-              className="h-12 flex-1 bg-green-600 hover:bg-green-700"
+              className="h-12 flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-full font-bold shadow-lg shadow-green-200/50 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
             >
               <CheckCircle className="mr-2 h-4 w-4" /> Accept
             </Button>
-            <Button 
+            <Button
               onClick={() => {
                 onOpenChange(false)
                 setTimeout(() => onCounter(booking.id), 150)
               }}
               variant="outline"
-              className="h-12 flex-1 border-2 border-blue-500 text-blue-600 hover:bg-blue-50"
+              className="h-12 flex-1 border-2 border-[#135bec] text-[#135bec] hover:bg-blue-50 rounded-full font-bold hover:scale-105 active:scale-95 transition-all duration-300"
             >
               <Edit className="mr-2 h-4 w-4" /> Counter
             </Button>
-            <Button 
+            <Button
               onClick={() => setShowDeclineModal(true)}
               variant="outline"
-              className="h-12 flex-1 border-2 border-red-500 text-red-600 hover:bg-red-50"
+              className="h-12 flex-1 border-2 border-red-500 text-red-600 hover:bg-red-50 rounded-full font-bold hover:scale-105 active:scale-95 transition-all duration-300"
             >
               <XCircle className="mr-2 h-4 w-4" /> Decline
             </Button>

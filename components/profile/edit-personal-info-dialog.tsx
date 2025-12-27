@@ -82,7 +82,7 @@ export function EditPersonalInfoDialog({ open, onOpenChange }: EditPersonalInfoD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] rounded-3xl shadow-premium border-none">
         <DialogHeader>
           <DialogTitle>Edit Personal Info</DialogTitle>
           <DialogDescription>
@@ -98,7 +98,7 @@ export function EditPersonalInfoDialog({ open, onOpenChange }: EditPersonalInfoD
                 {...form.register("name")}
                 id="name"
                 placeholder="John Doe"
-                className="h-12 px-4 pl-12 bg-gray-50 border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                className="h-12 px-4 pl-12 bg-gray-50 border-gray-200 rounded-2xl shadow-sm hover:shadow-md focus:bg-white focus:border-subic-blue focus:shadow-lg transition-all"
               />
             </div>
             {form.formState.errors.name && (
@@ -115,7 +115,7 @@ export function EditPersonalInfoDialog({ open, onOpenChange }: EditPersonalInfoD
                 id="email"
                 type="email"
                 placeholder="john@example.com"
-                className="h-12 px-4 pl-12 bg-gray-50 border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                className="h-12 px-4 pl-12 bg-gray-50 border-gray-200 rounded-2xl shadow-sm hover:shadow-md focus:bg-white focus:border-subic-blue focus:shadow-lg transition-all"
               />
             </div>
             {form.formState.errors.email && (
@@ -131,7 +131,7 @@ export function EditPersonalInfoDialog({ open, onOpenChange }: EditPersonalInfoD
                 {...form.register("phone")}
                 id="phone"
                 placeholder="9171234567"
-                className="h-12 px-4 pl-12 bg-gray-50 border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                className="h-12 px-4 pl-12 bg-gray-50 border-gray-200 rounded-2xl shadow-sm hover:shadow-md focus:bg-white focus:border-subic-blue focus:shadow-lg transition-all"
               />
             </div>
             {form.formState.errors.phone && (
@@ -147,7 +147,7 @@ export function EditPersonalInfoDialog({ open, onOpenChange }: EditPersonalInfoD
                 {...form.register("birthday")}
                 id="birthday"
                 type="date"
-                className="h-12 px-4 pl-12 bg-gray-50 border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                className="h-12 px-4 pl-12 bg-gray-50 border-gray-200 rounded-2xl shadow-sm hover:shadow-md focus:bg-white focus:border-subic-blue focus:shadow-lg transition-all"
               />
             </div>
             {form.formState.errors.birthday && (
@@ -163,7 +163,7 @@ export function EditPersonalInfoDialog({ open, onOpenChange }: EditPersonalInfoD
                 {...form.register("address")}
                 id="address"
                 placeholder="Subic Bay, Zambales"
-                className="h-12 px-4 pl-12 bg-gray-50 border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                className="h-12 px-4 pl-12 bg-gray-50 border-gray-200 rounded-2xl shadow-sm hover:shadow-md focus:bg-white focus:border-subic-blue focus:shadow-lg transition-all"
               />
             </div>
             {form.formState.errors.address && (
@@ -171,18 +171,18 @@ export function EditPersonalInfoDialog({ open, onOpenChange }: EditPersonalInfoD
             )}
           </div>
 
-          <DialogFooter className="pt-4 gap-2 sm:gap-0">
+          <DialogFooter className="pt-4 gap-4 sm:gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="flex-1 sm:flex-none"
+              className="flex-1 sm:flex-none rounded-full shadow-sm hover:shadow-md"
             >
               Cancel
             </Button>
             <Button 
               type="submit" 
-              className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700" 
+              className="flex-1 sm:flex-none bg-subic-blue hover:bg-blue-700 rounded-full shadow-premium hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all" 
               disabled={isLoading}
             >
               {isLoading ? (

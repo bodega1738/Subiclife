@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Bell, LogOut, Calendar, DollarSign, Users, CheckCircle, ChevronDown, Check, Camera } from "lucide-react"
+import { LogOut, Calendar, DollarSign, Users, CheckCircle, ChevronDown, Check, Camera } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { MerchantNotificationPanel } from "@/components/portal/merchant-notification-panel"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
@@ -403,20 +404,15 @@ export default function PortalDashboard() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => router.push("/portal/scanner")}
               className="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition-colors"
             >
               <Camera className="w-5 h-5" />
             </button>
-            <button className="p-2 rounded-full hover:bg-slate-100 relative group">
-              <Bell className="w-5 h-5 text-slate-600" />
-              {metrics.newRequests > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-              )}
-            </button>
-            <button 
-              onClick={() => router.push("/portal")} 
+            <MerchantNotificationPanel partnerId={currentPartner?.id} />
+            <button
+              onClick={() => router.push("/portal")}
               className="flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full hover:bg-slate-100 text-slate-600 transition-colors"
             >
               <LogOut className="w-5 h-5" />

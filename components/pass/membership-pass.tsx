@@ -1,13 +1,23 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { Shield, Maximize2, X, Anchor, Hotel, CreditCard, Star, RefreshCw, AlertTriangle, ChevronRight } from "lucide-react"
+import { useState, useEffect, useRef, useMemo } from "react"
+import { Shield, Maximize2, X, Anchor, Hotel, CreditCard, Star, RefreshCw, AlertTriangle, ChevronRight, Calendar, History, Wallet } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useUser, discountPercentages } from "@/lib/user-context"
+import { useMockDBStore } from "@/lib/mock-db"
 import { QRCodeSVG } from "qrcode.react"
+import { BookingCard } from "@/components/pass/booking-card"
+import { BookingDetailModal } from "@/components/pass/booking-detail-modal"
+import { CancelBookingModal } from "@/components/pass/cancel-booking-modal"
+import { CounterOfferResponseModal } from "@/components/booking/counter-offer-response-modal"
+import { PointsHistory } from "@/components/pass/points-history"
+import { acceptCounterOffer, declineCounterOffer, cancelBooking } from "@/lib/supabase-actions"
+import { useToast } from "@/hooks/use-toast"
+import { Booking, Partner, CounterOffer } from "@/lib/types"
 
 const tierStyles = {
   starter: {
@@ -49,13 +59,106 @@ const tierPricing = {
 
 export function MembershipPass() {
   const { user } = useUser()
+  const { toast } = useToast()
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [validity, setValidity] = useState(30)
   const [qrValue, setQrValue] = useState("")
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [isFlipped, setIsFlipped] = useState(false)
-  
+  const [activeTab, setActiveTab] = useState("card")
+
+  // Booking state
+  const [selectedBooking, setSelectedBooking] = useState<(Booking & { partner?: Partner; counter_offer?: CounterOffer }) | null>(null)
+  const [showBookingDetail, setShowBookingDetail] = useState(false)
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const [showCounterOfferModal, setShowCounterOfferModal] = useState(false)
+
+  // Get raw data from store - stable references
+  const allBookings = useMockDBStore((state) => state.bookings)
+  const partners = useMockDBStore((state) => state.partners)
+  const counterOffers = useMockDBStore((state) => state.counter_offers)
+  const updateBooking = useMockDBStore((state) => state.updateBooking)
+  const updateCounterOffer = useMockDBStore((state) => state.updateCounterOffer)
+  const addNotification = useMockDBStore((state) => state.addNotification)
+
+  // Memoize filtered and enriched bookings
+  const enrichedBookings = useMemo(() => {
+    const filtered = allBookings.filter(b => b.user_id === user?.id)
+    return filtered.map(booking => ({
+      ...booking,
+      partner: partners.find(p => p.id === booking.partner_id),
+      counter_offer: counterOffers.find(o => o.booking_id === booking.id && o.status === 'pending')
+    })).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  }, [allBookings, partners, counterOffers, user?.id])
+
   const cardRef = useRef<HTMLDivElement>(null)
+
+  // Handler for accepting counter-offers
+  const handleAcceptCounterOffer = async (bookingId: string, offerId: string) => {
+    if (!selectedBooking) return
+    try {
+      await acceptCounterOffer(bookingId, offerId, user?.id || '', selectedBooking.partner_id)
+      // Refresh booking from store
+      const updatedBookings = allBookings.filter(b => b.id === bookingId)
+      if (updatedBookings.length > 0) {
+        const enriched = updatedBookings.map(b => ({
+          ...b,
+          partner: partners.find(p => p.id === b.partner_id),
+          counter_offer: counterOffers.find(o => o.booking_id === b.id && o.status === 'pending')
+        }))
+        if (enriched[0]) setSelectedBooking(enriched[0])
+      }
+      toast({ title: "Offer Accepted!", description: "Your booking is now confirmed." })
+      setShowCounterOfferModal(false)
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to accept offer.", variant: "destructive" })
+    }
+  }
+
+  // Handler for declining counter-offers
+  const handleDeclineCounterOffer = async (bookingId: string, offerId: string) => {
+    if (!selectedBooking) return
+    try {
+      await declineCounterOffer(bookingId, offerId, user?.id || '', selectedBooking.partner_id)
+      // Refresh booking from store
+      const updatedBookings = allBookings.filter(b => b.id === bookingId)
+      if (updatedBookings.length > 0) {
+        const enriched = updatedBookings.map(b => ({
+          ...b,
+          partner: partners.find(p => p.id === b.partner_id),
+          counter_offer: counterOffers.find(o => o.booking_id === b.id && o.status === 'pending')
+        }))
+        if (enriched[0]) setSelectedBooking(enriched[0])
+      }
+      toast({ title: "Offer Declined", description: "The partner will be notified." })
+      setShowCounterOfferModal(false)
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to decline offer.", variant: "destructive" })
+    }
+  }
+
+  // Handler for canceling bookings
+  const handleCancelBooking = async (reason: string, note?: string) => {
+    if (!selectedBooking) return
+    try {
+      updateBooking(selectedBooking.id, { status: 'cancelled' })
+      addNotification({
+        id: `notif-${Date.now()}`,
+        user_id: '',
+        partner_id: selectedBooking.partner_id,
+        type: 'booking_cancelled',
+        title: 'Booking Cancelled',
+        message: `${user?.name} has cancelled their booking. Reason: ${reason}`,
+        read: false,
+        created_at: new Date().toISOString()
+      })
+      toast({ title: "Booking Cancelled", description: "The partner has been notified." })
+      setShowCancelModal(false)
+      setShowBookingDetail(false)
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to cancel booking.", variant: "destructive" })
+    }
+  }
 
   useEffect(() => {
     const generateQR = () => {
@@ -315,7 +418,7 @@ export function MembershipPass() {
   ]
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 pb-24">
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-slate-100">
         <div className="max-w-md mx-auto px-6 py-4">
@@ -324,57 +427,142 @@ export function MembershipPass() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-6 py-6 space-y-8">
-        <div>
-          <PassCard />
-          <Button
-            onClick={() => setIsFullscreen(true)}
-            variant="outline"
-            className="w-full mt-6 h-12 gap-2 rounded-xl border-slate-200 text-slate-600 font-medium tracking-tight hover:bg-slate-50 transition-colors"
-          >
-            <Maximize2 className="w-4 h-4" />
-            Fullscreen View
-          </Button>
-        </div>
+      <div className="max-w-md mx-auto px-6 py-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6 bg-slate-100 rounded-xl p-1">
+            <TabsTrigger value="card" className="rounded-lg text-xs font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Wallet className="w-4 h-4 mr-1.5" />
+              My Card
+            </TabsTrigger>
+            <TabsTrigger value="bookings" className="rounded-lg text-xs font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Calendar className="w-4 h-4 mr-1.5" />
+              Bookings
+              {enrichedBookings.filter(b => b.status === 'pending' || b.status === 'counter_offer_sent').length > 0 && (
+                <span className="ml-1.5 w-5 h-5 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center">
+                  {enrichedBookings.filter(b => b.status === 'pending' || b.status === 'counter_offer_sent').length}
+                </span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="rounded-lg text-xs font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <History className="w-4 h-4 mr-1.5" />
+              Points
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Benefits Summary Section (Below card) */}
-        <div className="grid grid-cols-2 gap-3">
-          {benefits.map((benefit, i) => (
-            <Card
-              key={i}
-              className="border-none shadow-sm rounded-2xl bg-white p-4 transition-all duration-200 ease-out hover:shadow-md hover:-translate-y-[1px]"
-            >
-              <div className="mb-2">{benefit.icon}</div>
-              <h4 className="text-[10px] font-[600] text-slate-400 uppercase tracking-[0.2em] mb-1">
-                {benefit.title}
-              </h4>
-              <p className="text-base font-bold text-slate-900 tracking-tight leading-tight">{benefit.desc}</p>
-            </Card>
-          ))}
-          {(tier === "premium" || tier === "elite") && (
-            <Card className="border-none shadow-sm rounded-2xl bg-gradient-to-br from-orange-50 to-white p-4">
-              <div className="mb-2"><Hotel className="w-5 h-5 text-orange-600" /></div>
-              <h4 className="text-[10px] font-[600] text-orange-400 uppercase tracking-[0.2em] mb-1">
-                Bonus
-              </h4>
-              <p className="text-base font-bold text-slate-900 tracking-tight leading-tight">
-                1 Free Hotel Night
-              </p>
-            </Card>
-          )}
-          {tier === "elite" && (
-            <Card className="border-none shadow-sm rounded-2xl bg-gradient-to-br from-cyan-50 to-white p-4">
-              <div className="mb-2"><Anchor className="w-5 h-5 text-cyan-600" /></div>
-              <h4 className="text-[10px] font-[600] text-cyan-400 uppercase tracking-[0.2em] mb-1">
-                Elite Perk
-              </h4>
-              <p className="text-base font-bold text-slate-900 tracking-tight leading-tight">
-                Yacht Cruise
-              </p>
-            </Card>
-          )}
-        </div>
+          {/* My Card Tab */}
+          <TabsContent value="card" className="space-y-8">
+            <div>
+              <PassCard />
+              <Button
+                onClick={() => setIsFullscreen(true)}
+                variant="outline"
+                className="w-full mt-6 h-12 gap-2 rounded-xl border-slate-200 text-slate-600 font-medium tracking-tight hover:bg-slate-50 transition-colors"
+              >
+                <Maximize2 className="w-4 h-4" />
+                Fullscreen View
+              </Button>
+            </div>
+
+            {/* Benefits Summary Section */}
+            <div className="grid grid-cols-2 gap-3">
+              {benefits.map((benefit, i) => (
+                <Card
+                  key={i}
+                  className="border-none shadow-sm rounded-2xl bg-white p-4 transition-all duration-200 ease-out hover:shadow-md hover:-translate-y-[1px]"
+                >
+                  <div className="mb-2">{benefit.icon}</div>
+                  <h4 className="text-[10px] font-[600] text-slate-400 uppercase tracking-[0.2em] mb-1">
+                    {benefit.title}
+                  </h4>
+                  <p className="text-base font-bold text-slate-900 tracking-tight leading-tight">{benefit.desc}</p>
+                </Card>
+              ))}
+              {(tier === "premium" || tier === "elite") && (
+                <Card className="border-none shadow-sm rounded-2xl bg-gradient-to-br from-orange-50 to-white p-4">
+                  <div className="mb-2"><Hotel className="w-5 h-5 text-orange-600" /></div>
+                  <h4 className="text-[10px] font-[600] text-orange-400 uppercase tracking-[0.2em] mb-1">
+                    Bonus
+                  </h4>
+                  <p className="text-base font-bold text-slate-900 tracking-tight leading-tight">
+                    1 Free Hotel Night
+                  </p>
+                </Card>
+              )}
+              {tier === "elite" && (
+                <Card className="border-none shadow-sm rounded-2xl bg-gradient-to-br from-cyan-50 to-white p-4">
+                  <div className="mb-2"><Anchor className="w-5 h-5 text-cyan-600" /></div>
+                  <h4 className="text-[10px] font-[600] text-cyan-400 uppercase tracking-[0.2em] mb-1">
+                    Elite Perk
+                  </h4>
+                  <p className="text-base font-bold text-slate-900 tracking-tight leading-tight">
+                    Yacht Cruise
+                  </p>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Bookings Tab */}
+          <TabsContent value="bookings" className="space-y-4">
+            {enrichedBookings.length === 0 ? (
+              <div className="py-16 text-center">
+                <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-slate-900 mb-1">No Bookings Yet</h3>
+                <p className="text-sm text-slate-500 mb-4">Browse offers and make your first booking!</p>
+                <Button className="rounded-xl">Browse Offers</Button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {enrichedBookings.map((booking) => (
+                  <BookingCard
+                    key={booking.id}
+                    booking={booking}
+                    onViewDetails={() => {
+                      setSelectedBooking(booking)
+                      if (booking.status === 'counter_offer_sent' && booking.counter_offer) {
+                        setShowCounterOfferModal(true)
+                      } else {
+                        setShowBookingDetail(true)
+                      }
+                    }}
+                    onCancel={() => {
+                      setSelectedBooking(booking)
+                      setShowCancelModal(true)
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Activity/Points Tab */}
+          <TabsContent value="activity">
+            <PointsHistory userId={user?.id || ''} />
+          </TabsContent>
+        </Tabs>
       </div>
+
+      {/* Modals */}
+      <BookingDetailModal
+        isOpen={showBookingDetail}
+        onClose={() => setShowBookingDetail(false)}
+        booking={selectedBooking}
+      />
+
+      <CancelBookingModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        bookingId={selectedBooking?.id || ''}
+        onConfirm={handleCancelBooking}
+      />
+
+      <CounterOfferResponseModal
+        isOpen={showCounterOfferModal}
+        onClose={() => setShowCounterOfferModal(false)}
+        booking={selectedBooking}
+        onAccept={handleAcceptCounterOffer}
+        onDecline={handleDeclineCounterOffer}
+      />
     </div>
   )
 }

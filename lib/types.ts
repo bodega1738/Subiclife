@@ -57,7 +57,6 @@ export interface Offer {
   title: string
   description: string
   image: string
-  logo?: string
   discount: number
   isEliteExclusive?: boolean
   originalPrice?: number
@@ -211,6 +210,15 @@ export interface CounterOffer {
   merchant_note: string
   status: 'pending' | 'accepted' | 'declined'
   created_at: string
+}
+
+export interface PaymentQRData {
+  booking_reference: string
+  merchant_name: string
+  amount: number
+  timestamp: string
+  payment_method: 'gcash' | 'card' | 'maya'
+  status: 'pending' | 'completed'
 }
 
 export interface MerchantRegistrationData {

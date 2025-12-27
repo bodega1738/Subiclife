@@ -73,8 +73,8 @@ export function BookingCard({
   }
 
   return (
-    <Card className="overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md mb-4">
-      <div className="p-4 sm:p-5">
+    <Card className="overflow-hidden bg-white rounded-3xl border border-gray-100 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] mb-4">
+      <div className="p-5 sm:p-6">
         <div className="flex justify-between items-start mb-4">
           <div className="flex gap-4">
             <div className="relative h-20 w-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
@@ -97,24 +97,24 @@ export function BookingCard({
               </p>
             </div>
           </div>
-          <Badge className={`px-2 py-1 rounded-full flex items-center gap-1 text-[10px] border ${statusConfig.className}`}>
+          <Badge className={`px-2.5 py-1 rounded-full flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] border backdrop-blur-sm bg-white/90 ${statusConfig.className}`}>
             <statusConfig.icon className="h-3 w-3" />
             {statusConfig.label}
           </Badge>
         </div>
 
-        <div className="space-y-3 mb-4">
+        <div className="space-y-4 mb-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Calendar className="h-4 w-4 text-gray-400" />
+            <Calendar className="h-4 w-4 text-[#135bec]" />
             <span>{getBookingDetailString()}</span>
           </div>
-          
-          <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
-            <span className="text-xs text-gray-500 font-medium">Final Amount</span>
+
+          <div className="flex justify-between items-center py-3 px-4 bg-gray-50/80 backdrop-blur-sm rounded-2xl border border-gray-100">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Final Amount</span>
             <div className="text-right">
-              <span className="font-bold text-gray-900 block">₱{booking.final_amount.toLocaleString()}</span>
+              <span className="text-lg font-black text-gray-900 block">₱{booking.final_amount.toLocaleString()}</span>
               {booking.discount_amount > 0 && (
-                <span className="text-[10px] text-green-600 font-medium">
+                <span className="text-[10px] text-green-600 font-bold">
                   Saved ₱{booking.discount_amount.toLocaleString()}
                 </span>
               )}
@@ -123,18 +123,20 @@ export function BookingCard({
         </div>
 
         {isCounterOffer && (
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-xl">
-            <div className="flex items-start gap-2 mb-3">
-              <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5" />
+          <div className="mb-4 p-4 bg-gradient-to-br from-blue-50 to-blue-50/50 border border-blue-100 rounded-2xl border-l-4 border-l-blue-500">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="h-4 w-4 text-blue-600" />
+              </div>
               <div>
-                <p className="text-xs font-semibold text-blue-900">Partner sent a counter-offer</p>
-                <p className="text-[11px] text-blue-700 italic">"{booking.counter_offer?.merchant_note}"</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 mb-1">Counter-Offer Received</p>
+                <p className="text-xs text-blue-800 italic leading-relaxed">"{booking.counter_offer?.merchant_note}"</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <Button 
-                size="sm" 
-                className="h-10 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs"
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                size="sm"
+                className="h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-full text-xs font-bold shadow-lg shadow-green-200/50 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
                 onClick={() => {
                   if (booking.counter_offer?.id) {
                     onAcceptCounterOffer?.(booking.id, booking.counter_offer.id)
@@ -144,10 +146,10 @@ export function BookingCard({
               >
                 Accept Offer
               </Button>
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 variant="outline"
-                className="h-10 border-red-200 text-red-600 hover:bg-red-50 rounded-lg text-xs"
+                className="h-12 border-2 border-red-200 text-red-600 hover:bg-red-50 rounded-full text-xs font-bold hover:scale-105 active:scale-95 transition-all duration-300"
                 onClick={() => {
                   if (booking.counter_offer?.id) {
                     onDeclineCounterOffer?.(booking.id, booking.counter_offer.id)
@@ -161,32 +163,32 @@ export function BookingCard({
           </div>
         )}
 
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-50">
-          <Button 
-            variant="outline" 
-            className="flex-1 h-10 rounded-lg text-xs font-medium border-gray-200 text-gray-700"
+        <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-100">
+          <Button
+            variant="outline"
+            className="flex-1 h-12 rounded-full text-xs font-bold border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:scale-105 active:scale-95 transition-all duration-300"
             onClick={() => onViewDetails(booking.id)}
           >
             View Details
           </Button>
-          <Button 
-            variant="outline" 
-            className="h-10 w-10 p-0 rounded-lg border-gray-200 text-gray-700"
+          <Button
+            variant="outline"
+            className="h-12 w-12 p-0 rounded-full border-2 border-gray-200 text-gray-600 hover:bg-gray-50 hover:scale-105 active:scale-95 transition-all duration-300"
             title="Get Directions"
           >
-            <MapPin className="h-4 w-4" />
+            <MapPin className="h-5 w-5" />
           </Button>
-          <Button 
-            variant="outline" 
-            className="h-10 w-10 p-0 rounded-lg border-gray-200 text-gray-700"
+          <Button
+            variant="outline"
+            className="h-12 w-12 p-0 rounded-full border-2 border-gray-200 text-gray-600 hover:bg-gray-50 hover:scale-105 active:scale-95 transition-all duration-300"
             title="Contact"
           >
-            <MessageSquare className="h-4 w-4" />
+            <MessageSquare className="h-5 w-5" />
           </Button>
           {(booking.status === 'pending' || booking.status === 'confirmed') && (
-            <Button 
-              variant="ghost" 
-              className="w-full h-10 mt-1 text-xs text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg font-medium"
+            <Button
+              variant="ghost"
+              className="w-full h-12 mt-1 text-xs text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full font-bold hover:scale-105 active:scale-95 transition-all duration-300"
               onClick={() => onCancel(booking.id)}
             >
               Cancel Booking

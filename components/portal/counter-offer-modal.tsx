@@ -256,17 +256,19 @@ export function CounterOfferModal({ booking, open, onOpenChange, onSubmit }: Cou
 
   return (
     <Dialog open={open} onOpenChange={loading ? undefined : onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Send Counter-Offer</DialogTitle>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl border-0 relative animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {/* Northern Lights gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#135bec]/5 via-transparent to-[#10B981]/5 rounded-3xl pointer-events-none" />
+        <DialogHeader className="relative z-10">
+          <DialogTitle className="text-xl font-bold">Send Counter-Offer</DialogTitle>
         </DialogHeader>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 py-4">
           <div className="space-y-6">
           {/* Original Request Summary */}
-          <div className="bg-muted/50 border rounded-lg p-4">
-            <h3 className="font-semibold mb-2 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4" /> Original Request
+          <div className="bg-white/60 backdrop-blur-md border border-gray-100/50 rounded-2xl p-5 shadow-sm">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-3 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-[#135bec]" /> Original Request
             </h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
@@ -598,29 +600,29 @@ export function CounterOfferModal({ booking, open, onOpenChange, onSubmit }: Cou
           )}
 
           {/* Merchant Note */}
-          <div className="space-y-2">
-            <Label>Merchant Note <span className="text-red-500">*</span></Label>
-            <Textarea 
-              value={merchantNote} 
-              onChange={e => setMerchantNote(e.target.value)} 
+          <div className="space-y-3 bg-white/60 backdrop-blur-md rounded-2xl p-5 border border-gray-100/50 shadow-sm border-l-4 border-l-[#135bec]">
+            <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">Merchant Note <span className="text-red-500">*</span></Label>
+            <Textarea
+              value={merchantNote}
+              onChange={e => setMerchantNote(e.target.value)}
               maxLength={500}
               placeholder="We're fully booked Dec 25, but can upgrade you..."
-              className={cn("h-24", merchantNote.length > 0 && merchantNote.length < 20 && "border-red-300")}
+              className={cn("h-24 rounded-2xl border-gray-200 focus:ring-2 focus:ring-[#135bec]/30 focus:border-[#135bec]", merchantNote.length > 0 && merchantNote.length < 20 && "border-red-300")}
             />
              <div className="flex justify-between items-center text-xs">
-                {merchantNote.length < 20 && merchantNote.length > 0 && <span className="text-red-500">Min 20 characters required</span>}
-                <div className={cn("ml-auto", merchantNote.length < 20 ? "text-red-500" : "text-green-600")}>
+                {merchantNote.length < 20 && merchantNote.length > 0 && <span className="text-red-500 font-medium">Min 20 characters required</span>}
+                <div className={cn("ml-auto font-bold", merchantNote.length < 20 ? "text-red-500" : "text-green-600")}>
                     {merchantNote.length}/500
                 </div>
              </div>
           </div>
           
            {validationErrors.length > 0 && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                  <h4 className="text-sm font-semibold text-red-800 mb-1 flex items-center gap-2">
+              <div className="bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-2xl p-4 border-l-4 border-l-red-500">
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-800 mb-2 flex items-center gap-2">
                       <AlertCircle className="h-4 w-4" /> Please fix the following:
                   </h4>
-                  <ul className="text-sm text-red-700 list-disc list-inside">
+                  <ul className="text-sm text-red-700 list-disc list-inside space-y-1">
                       {validationErrors.map((err, i) => (
                           <li key={i}>{err}</li>
                       ))}
@@ -631,18 +633,18 @@ export function CounterOfferModal({ booking, open, onOpenChange, onSubmit }: Cou
           </div>
 
           {/* Right Column: Preview Box */}
-          <div className="space-y-4">
-             <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6 shadow-sm sticky top-4">
+          <div className="space-y-4 relative z-10">
+             <div className="bg-white/60 backdrop-blur-md border-l-4 border-[#135bec] rounded-2xl p-6 shadow-lg sticky top-4 border border-blue-100/50">
                 <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-bold text-blue-900 flex items-center gap-2">
+                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#135bec] flex items-center gap-2">
                         <Info className="h-5 w-5" /> Member Preview
                     </h4>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">Counter-Offer Received</Badge>
+                    <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 text-[9px] font-bold uppercase tracking-[0.1em] px-3 py-1 rounded-full">Counter-Offer</Badge>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="space-y-2">
-                        <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Original Request</h5>
+                    <div className="space-y-2 bg-gray-50/80 rounded-xl p-3">
+                        <h5 className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">Original Request</h5>
                         {booking.booking_type === 'hotel' && (
                             <div className="text-sm space-y-1">
                                 <p>{booking.booking_details.check_in}</p>
@@ -669,8 +671,8 @@ export function CounterOfferModal({ booking, open, onOpenChange, onSubmit }: Cou
                         )}
                     </div>
                     
-                    <div className="space-y-2">
-                        <h5 className="text-xs font-bold text-blue-700 uppercase tracking-wider">Your Offer</h5>
+                    <div className="space-y-2 bg-blue-50/80 rounded-xl p-3">
+                        <h5 className="text-[9px] font-bold text-[#135bec] uppercase tracking-[0.2em]">Your Offer</h5>
                          {booking.booking_type === 'hotel' && (
                             <div className="text-sm space-y-1">
                                 <p className={cn(enableCheckInChange && "text-green-600 font-medium flex items-center gap-1")}>
@@ -750,13 +752,14 @@ export function CounterOfferModal({ booking, open, onOpenChange, onSubmit }: Cou
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={loading} className="bg-blue-600 hover:bg-blue-700">
+        <DialogFooter className="relative z-10 pt-6 gap-3">
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading} className="h-12 px-6 rounded-full border-2 border-gray-200 font-bold hover:scale-105 active:scale-95 transition-all duration-300">Cancel</Button>
+          <Button onClick={handleSubmit} disabled={loading} className="h-12 px-8 rounded-full bg-gradient-to-r from-[#135bec] to-[#0e45b5] hover:from-[#0e45b5] hover:to-[#0a3696] font-bold shadow-lg shadow-blue-200/50 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300">
             {loading ? (
-                <>
-                    <span className="animate-spin mr-2">⏳</span> Sending...
-                </>
+                <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Sending...
+                </span>
             ) : "Send Counter-Offer"}
           </Button>
         </DialogFooter>

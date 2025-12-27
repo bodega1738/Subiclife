@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { UserProvider } from "@/lib/user-context"
 import "@/styles/globals.css"
 import { BottomNavWrapper } from "@/components/layout/bottom-nav-wrapper"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" })
@@ -48,6 +49,7 @@ export default function RootLayout({
         <UserProvider>
           {children}
           <BottomNavWrapper />
+          <Toaster />
         </UserProvider>
         <Analytics />
       </body>

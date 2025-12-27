@@ -118,24 +118,24 @@ export default function ProfilePage() {
 
       <main className="p-6 max-w-md mx-auto space-y-6">
         {/* User Info Card */}
-        <section className="bg-white rounded-2xl p-6 shadow-sm border flex flex-col items-center text-center">
+        <section className="bg-white rounded-3xl p-8 shadow-premium border-none flex flex-col items-center text-center">
           <div className="relative mb-4">
-            <Avatar className="h-24 w-24 border-4 border-white shadow-md">
+            <Avatar className="h-24 w-24 border-4 border-white shadow-xl shadow-subic-blue/20">
               <AvatarImage src="/placeholder-user.jpg" />
-              <AvatarFallback className="bg-blue-600 text-white text-2xl font-bold">
+              <AvatarFallback className="bg-subic-blue text-white text-2xl font-bold">
                 {initials}
               </AvatarFallback>
             </Avatar>
           </div>
           <h2 className="text-xl font-bold">{user.name}</h2>
           <p className="text-sm text-gray-600 mb-2">{user.email}</p>
-          <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none px-3 py-1 font-bold uppercase text-xs mb-2">
+          <Badge className="bg-blue-100 text-subic-blue hover:bg-blue-100 border-none px-4 py-2 rounded-full shadow-md font-bold uppercase text-xs mb-2">
             {user.tier} Member
           </Badge>
           <p className="text-xs text-gray-500 mb-4">Member since {formattedDate}</p>
           <Button 
             variant="outline" 
-            className="w-full rounded-xl"
+            className="w-full rounded-full shadow-premium hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
             onClick={() => setIsEditProfileOpen(true)}
           >
             Edit Profile
@@ -143,31 +143,32 @@ export default function ProfilePage() {
         </section>
 
         {/* Tier Benefits Card */}
-        <section className="bg-gradient-to-br from-[#135bec] to-[#0e45b5] rounded-2xl p-6 text-white shadow-lg space-y-4">
-          <div className="flex justify-between items-center">
+        <section className="relative bg-gradient-to-br from-[#135bec] to-[#0e45b5] rounded-3xl p-8 text-white shadow-xl shadow-subic-blue/30 space-y-4 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl pointer-events-none"></div>
+          <div className="relative flex justify-between items-center">
             <div className="flex items-center gap-2">
               {getTierIcon(user.tier || "starter")}
               <span className="font-bold uppercase tracking-wider">{user.tier} Benefits</span>
             </div>
           </div>
           
-          <div className="space-y-3">
+          <div className="relative space-y-3">
             <div className="flex items-center gap-3">
-              <div className="bg-white/20 p-2 rounded-lg">🛡️</div>
+              <div className="bg-white/20 p-3 rounded-xl">🛡️</div>
               <p className="text-sm font-medium">₱{user.insuranceAmount?.toLocaleString()} Coverage</p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="bg-white/20 p-2 rounded-lg">💰</div>
+              <div className="bg-white/20 p-3 rounded-xl">💰</div>
               <p className="text-sm font-medium">{discount}% Off All Bookings</p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="bg-white/20 p-2 rounded-lg">⭐</div>
+              <div className="bg-white/20 p-3 rounded-xl">⭐</div>
               <p className="text-sm font-medium">{user.points?.toLocaleString()} Reward Points</p>
             </div>
           </div>
 
           <Button 
-            className="w-full h-12 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-50 border-none mt-2"
+            className="relative w-full h-12 bg-white text-subic-blue rounded-full font-bold shadow-premium hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all border-none mt-2"
             onClick={() => router.push('/membership')}
           >
             Upgrade Membership
@@ -176,14 +177,14 @@ export default function ProfilePage() {
 
         {/* Account Section */}
         <section className="space-y-3">
-          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide px-1">Account</h3>
+          <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-1">Account</h3>
           <div className="space-y-2">
             <div 
               onClick={() => setIsEditProfileOpen(true)}
-              className="flex items-center justify-between p-4 bg-white rounded-xl border hover:shadow-md transition-shadow cursor-pointer"
+              className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <UserIcon className="h-5 w-5 text-blue-600" />
+                <UserIcon className="h-5 w-5 text-subic-blue" />
                 <span className="font-medium">Personal Info</span>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -191,10 +192,10 @@ export default function ProfilePage() {
 
             <div 
               onClick={() => setIsPaymentMethodsOpen(true)}
-              className="flex items-center justify-between p-4 bg-white rounded-xl border hover:shadow-md transition-shadow cursor-pointer"
+              className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <CreditCard className="h-5 w-5 text-blue-600" />
+                <CreditCard className="h-5 w-5 text-subic-blue" />
                 <span className="font-medium">Payment Methods</span>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -202,10 +203,10 @@ export default function ProfilePage() {
 
             <div 
               onClick={() => router.push('/pass?tab=history')}
-              className="flex items-center justify-between p-4 bg-white rounded-xl border hover:shadow-md transition-shadow cursor-pointer"
+              className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-blue-600" />
+                <Calendar className="h-5 w-5 text-subic-blue" />
                 <span className="font-medium">Booking History</span>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -213,10 +214,10 @@ export default function ProfilePage() {
 
             <div 
               onClick={() => router.push('/partners?filter=favorites')}
-              className="flex items-center justify-between p-4 bg-white rounded-xl border hover:shadow-md transition-shadow cursor-pointer"
+              className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <Heart className="h-5 w-5 text-blue-600" />
+                <Heart className="h-5 w-5 text-subic-blue" />
                 <span className="font-medium">Favorites</span>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -226,9 +227,9 @@ export default function ProfilePage() {
 
         {/* Preferences Section */}
         <section className="space-y-3">
-          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide px-1">Preferences</h3>
+          <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-1">Preferences</h3>
           <div className="space-y-2">
-            <div className="flex items-center justify-between p-4 bg-white rounded-xl border">
+            <div className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium">
               <div className="flex items-center gap-3">
                 <Bell className="h-5 w-5 text-gray-600" />
                 <span className="font-medium">Notifications</span>
@@ -239,7 +240,7 @@ export default function ProfilePage() {
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-white rounded-xl border">
+            <div className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium">
               <div className="flex items-center gap-3">
                 <Globe className="h-5 w-5 text-gray-600" />
                 <span className="font-medium">Language</span>
@@ -248,14 +249,14 @@ export default function ProfilePage() {
                 <SelectTrigger className="w-[100px] h-8 border-none focus:ring-0">
                   <SelectValue placeholder="Language" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-2xl border-none shadow-premium">
                   <SelectItem value="en">English</SelectItem>
                   <SelectItem value="fil">Filipino</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-white rounded-xl border">
+            <div className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium">
               <div className="flex items-center gap-3">
                 <DollarSign className="h-5 w-5 text-gray-600" />
                 <span className="font-medium">Currency</span>
@@ -264,14 +265,14 @@ export default function ProfilePage() {
                 <SelectTrigger className="w-[80px] h-8 border-none focus:ring-0">
                   <SelectValue placeholder="Currency" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-2xl border-none shadow-premium">
                   <SelectItem value="PHP">PHP</SelectItem>
                   <SelectItem value="USD">USD</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-white rounded-xl border">
+            <div className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium">
               <div className="flex items-center gap-3">
                 <Moon className="h-5 w-5 text-gray-600" />
                 <span className="font-medium">Dark Mode</span>
@@ -284,10 +285,10 @@ export default function ProfilePage() {
 
             <div 
               onClick={() => router.push('/onboarding')}
-              className="flex items-center justify-between p-4 bg-white rounded-xl border hover:shadow-md transition-shadow cursor-pointer"
+              className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <LayoutGrid className="h-5 w-5 text-blue-600" />
+                <LayoutGrid className="h-5 w-5 text-subic-blue" />
                 <span className="font-medium">Update Travel Preferences</span>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -297,9 +298,9 @@ export default function ProfilePage() {
 
         {/* Support Section */}
         <section className="space-y-3">
-          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide px-1">Support</h3>
+          <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-1">Support</h3>
           <div className="space-y-2">
-            <div className="flex items-center justify-between p-4 bg-white rounded-xl border hover:shadow-md transition-shadow cursor-pointer">
+            <div className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer">
               <div className="flex items-center gap-3">
                 <HelpCircle className="h-5 w-5 text-gray-600" />
                 <span className="font-medium">Help Center</span>
@@ -309,7 +310,7 @@ export default function ProfilePage() {
 
             <div 
               onClick={() => window.location.href = 'mailto:support@subic.life'}
-              className="flex items-center justify-between p-4 bg-white rounded-xl border hover:shadow-md transition-shadow cursor-pointer"
+              className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-gray-600" />
@@ -318,7 +319,7 @@ export default function ProfilePage() {
               <ChevronRight className="h-5 w-5 text-gray-400" />
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-white rounded-xl border hover:shadow-md transition-shadow cursor-pointer">
+            <div className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer">
               <div className="flex items-center gap-3">
                 <ShieldCheck className="h-5 w-5 text-gray-600" />
                 <span className="font-medium">Terms of Service</span>
@@ -326,7 +327,7 @@ export default function ProfilePage() {
               <ChevronRight className="h-5 w-5 text-gray-400" />
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-white rounded-xl border hover:shadow-md transition-shadow cursor-pointer">
+            <div className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer">
               <div className="flex items-center gap-3">
                 <Shield className="h-5 w-5 text-gray-600" />
                 <span className="font-medium">Privacy Policy</span>
@@ -334,7 +335,7 @@ export default function ProfilePage() {
               <ChevronRight className="h-5 w-5 text-gray-400" />
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-white rounded-xl border hover:shadow-md transition-shadow cursor-pointer">
+            <div className="flex items-center justify-between p-4 bg-white rounded-3xl shadow-premium hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer">
               <div className="flex items-center gap-3">
                 <Star className="h-5 w-5 text-gray-600" />
                 <span className="font-medium">Rate App</span>
@@ -347,7 +348,7 @@ export default function ProfilePage() {
         {/* Logout Button */}
         <Button 
           variant="outline"
-          className="w-full h-12 border-2 border-red-500 text-red-600 rounded-xl font-semibold hover:bg-red-50 hover:text-red-700 transition-colors mt-8 mb-4"
+          className="w-full h-12 border-2 border-red-500 text-red-600 rounded-full shadow-premium hover:shadow-xl hover:-translate-y-0.5 active:scale-95 hover:bg-red-50 hover:text-red-700 transition-all mt-8 mb-4"
           onClick={() => logout()}
         >
           <LogOut className="mr-2 h-5 w-5" />

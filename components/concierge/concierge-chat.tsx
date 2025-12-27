@@ -140,22 +140,22 @@ export function ConciergeChat() {
   return (
     <div className="flex flex-col h-[calc(100vh-80px)] bg-[#f6f6f8]">
       {/* Header */}
-      <div className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-10">
+      <div className="bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] sticky top-0 z-10">
         <div className="max-w-md mx-auto px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold text-[#111318]">Concierge</h1>
-            <span className="flex items-center gap-1 text-xs text-[#10b981]">
-              <span className="w-2 h-2 bg-[#10b981] rounded-full" />
+            <h1 className="text-xl font-bold tracking-tight text-[#111318]">Concierge</h1>
+            <span className="flex items-center gap-1 text-xs font-semibold text-[#10b981]">
+              <span className="w-2 h-2 bg-[#10b981] rounded-full shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
               Online
             </span>
           </div>
-          <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
+          <button className="p-2 rounded-full hover:bg-gray-100 transition-all duration-200">
             <MoreVertical className="w-5 h-5 text-[#616f89]" />
           </button>
         </div>
         
         {/* Search Bar */}
-        <div className="max-w-md mx-auto px-5 pb-3">
+        <div className="max-w-md mx-auto px-5 pb-4">
           <form 
             onSubmit={(e) => {
               e.preventDefault()
@@ -172,21 +172,21 @@ export function ConciergeChat() {
             <Input 
               name="search"
               placeholder="What can I help you find?" 
-              className="pl-11 h-12 rounded-xl bg-white shadow-sm border-gray-200"
+              className="pl-11 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)] border-gray-200 focus:ring-2 focus:ring-[#135bec]/20 transition-all duration-200"
             />
           </form>
         </div>
       </div>
 
       {/* Quick Prompts */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-md mx-auto px-5 py-3">
-          <div className="flex gap-2 overflow-x-auto">
-            {quickPrompts.map((prompt) => (
+      <div className="bg-white/90 backdrop-blur-lg border-b border-gray-100">
+        <div className="max-w-md mx-auto px-5 py-4">
+          <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+            {quickPrompts.map((prompt, index) => (
               <button
                 key={prompt}
                 onClick={() => handleSend(prompt)}
-                className="flex-shrink-0 px-4 py-2 bg-gray-100 rounded-full text-sm text-[#111318] font-medium hover:bg-gray-200 transition-colors"
+                className={`flex-shrink-0 px-5 py-2.5 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.04)] rounded-full text-sm text-[#111318] font-semibold hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:scale-105 transition-all duration-200 ${index === quickPrompts.length - 1 ? 'mr-5' : ''}`}
               >
                 {prompt}
               </button>
@@ -197,65 +197,66 @@ export function ConciergeChat() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-md mx-auto px-5 py-4 space-y-4">
+        <div className="max-w-md mx-auto px-5 py-6 space-y-6 animate-in fade-in duration-500">
           {messages.map((message) => (
-            <div key={message.id} className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div key={message.id} className={`flex gap-4 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
               {message.role === "assistant" && (
-                <Avatar className="w-8 h-8 flex-shrink-0">
-                  <AvatarFallback className="bg-[#135bec] text-white">
+                <Avatar className="w-8 h-8 flex-shrink-0 shadow-[0_2px_8px_rgba(19,91,236,0.2)]">
+                  <AvatarFallback className="bg-gradient-to-br from-[#135bec] to-[#0e45b5] text-white">
                     <Bot className="w-4 h-4" />
                   </AvatarFallback>
                 </Avatar>
               )}
 
-              <div className={`max-w-[80%] ${message.role === "user" ? "order-first" : ""}`}>
+              <div className={`max-w-[85%] ${message.role === "user" ? "order-first" : ""}`}>
                 <div
-                  className={`rounded-2xl px-4 py-3 ${
+                  className={`rounded-3xl px-5 py-4 transition-all duration-200 ${
                     message.role === "user"
-                      ? "bg-[#135bec] text-white"
-                      : "bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_8px_rgba(0,0,0,0.04)] text-[#111318]"
+                      ? "bg-gradient-to-br from-[#135bec] to-[#0e45b5] text-white shadow-[0_4px_16px_rgba(19,91,236,0.25)] font-medium"
+                      : "bg-white shadow-[0_4px_20px_-2px_rgba(0,0,0,0.08)] text-[#111318] border border-gray-50"
                   }`}
                 >
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                  <p className="text-base leading-relaxed whitespace-pre-wrap">{message.content}</p>
                 </div>
 
                 {/* Booking Card */}
                 {message.bookingCard && (
-                  <Card className="mt-3 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_8px_rgba(0,0,0,0.04)] border-0 overflow-hidden rounded-2xl">
-                    <div className="aspect-[4/3] w-full relative">
+                  <Card className="mt-4 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.12)] border border-gray-100 overflow-hidden rounded-3xl animate-card">
+                    <div className="aspect-[4/3] w-full relative rounded-t-3xl overflow-hidden">
                       <img
                         src={message.bookingCard.image || "/placeholder.svg"}
                         alt={message.bookingCard.venue}
                         className="w-full h-full object-cover"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                     </div>
-                    <CardContent className="p-3 flex flex-col gap-2">
+                    <CardContent className="p-5 flex flex-col gap-3">
                       <div>
-                        <h4 className="font-semibold text-[#111318]">{message.bookingCard.venue}</h4>
+                        <h4 className="text-lg font-bold tracking-tight text-[#111318]">{message.bookingCard.venue}</h4>
                         <p className="text-sm text-gray-600">
                           {message.bookingCard.category} • ⭐ {message.bookingCard.rating}
                         </p>
                       </div>
                       
-                      <div className="flex items-center justify-between mt-1">
+                      <div className="flex items-center justify-between mt-2">
                         <div className="flex flex-col">
-                           <span className="text-xs text-gray-500">From</span>
-                           <span className="text-base font-semibold">₱{message.bookingCard.price?.toLocaleString()}</span>
+                           <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">From</span>
+                           <span className="text-xl font-bold">₱{message.bookingCard.price?.toLocaleString()}</span>
                         </div>
-                        <span className="bg-[#10b981]/10 text-[#10b981] px-2 py-1 rounded-md text-xs font-medium">
+                        <span className="bg-[#10b981] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-[0_2px_8px_rgba(16,185,129,0.25)]">
                           {message.bookingCard.discount}% OFF
                         </span>
                       </div>
 
                       {confirmedBookings.has(message.id) ? (
-                        <div className="mt-2 flex items-center justify-center gap-2 py-2 bg-green-100 rounded-lg">
+                        <div className="mt-2 flex items-center justify-center gap-2 py-3 bg-[#10b981]/10 border border-[#10b981]/20 rounded-full">
                           <Check className="w-4 h-4 text-[#10b981]" />
-                          <span className="text-sm font-medium text-green-700">Booking Request Sent</span>
+                          <span className="text-sm font-semibold text-[#10b981]">Booking Request Sent</span>
                         </div>
                       ) : (
                         <Button
                           onClick={() => handleConfirmBooking(message.id, message.bookingCard)}
-                          className="w-full mt-2 bg-[#10b981] hover:bg-[#059669] rounded-xl h-11"
+                          className="w-full mt-2 bg-[#10b981] hover:bg-[#059669] hover:shadow-[0_4px_16px_rgba(16,185,129,0.3)] rounded-full h-12 font-semibold text-base transition-all duration-200"
                         >
                           Book Now
                         </Button>
@@ -264,7 +265,7 @@ export function ConciergeChat() {
                   </Card>
                 )}
 
-                <p className="text-xs text-[#616f89] mt-1 px-1">
+                <p className="text-xs font-medium text-[#616f89] mt-2 px-2">
                   {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </p>
               </div>
@@ -272,13 +273,13 @@ export function ConciergeChat() {
           ))}
 
           {isLoading && (
-            <div className="flex gap-3 justify-start">
-              <Avatar className="w-8 h-8 flex-shrink-0">
-                <AvatarFallback className="bg-[#135bec] text-white">
+            <div className="flex gap-4 justify-start">
+              <Avatar className="w-8 h-8 flex-shrink-0 shadow-[0_2px_8px_rgba(19,91,236,0.2)]">
+                <AvatarFallback className="bg-gradient-to-br from-[#135bec] to-[#0e45b5] text-white">
                   <Bot className="w-4 h-4" />
                 </AvatarFallback>
               </Avatar>
-              <div className="bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_8px_rgba(0,0,0,0.04)] rounded-2xl px-4 py-3">
+              <div className="bg-white shadow-[0_4px_20px_-2px_rgba(0,0,0,0.08)] border border-gray-50 rounded-3xl px-5 py-4">
                 <Loader2 className="w-4 h-4 animate-spin text-[#616f89]" />
               </div>
             </div>
@@ -289,22 +290,22 @@ export function ConciergeChat() {
       </div>
 
       {/* Input */}
-      <div className="bg-white border-t border-gray-100">
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto px-5 py-3 flex gap-2">
+      <div className="bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-[0_-2px_12px_rgba(0,0,0,0.04)]">
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto px-5 py-4 flex gap-3">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask your concierge..."
-            className="flex-1 h-12 rounded-xl border-gray-200"
+            className="flex-1 h-14 rounded-full border-gray-200 shadow-[0_2px_8px_rgba(0,0,0,0.03)] focus:border-[#135bec] text-base font-medium transition-all duration-200"
             disabled={isLoading}
           />
           <Button
             type="submit"
             size="icon"
             disabled={!input.trim() || isLoading}
-            className="h-12 w-12 rounded-xl bg-[#135bec] hover:bg-[#0e45b5]"
+            className="h-14 w-14 rounded-full bg-gradient-to-br from-[#135bec] to-[#0e45b5] hover:shadow-[0_4px_16px_rgba(19,91,236,0.3)] hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-5 h-5" />
           </Button>
         </form>
       </div>
