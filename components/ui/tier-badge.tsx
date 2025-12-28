@@ -18,6 +18,10 @@ export function TierBadge({ tier, className, size = "md" }: TierBadgeProps) {
       bg: "bg-black",
       text: "text-[#D97706]"
     },
+    prestige: {
+      bg: "bg-gradient-to-r from-[#F59E0B] to-[#D97706]",
+      text: "text-white"
+    },
     premium: {
       bg: "bg-[#D97706]",
       text: "text-white"

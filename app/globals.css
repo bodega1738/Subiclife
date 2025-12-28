@@ -79,6 +79,8 @@
   --subic-blue: #135bec;
   --subic-green: #10b981;
   --subic-gold: #d97706;
+  --prestige-amber: #F59E0B;
+  --prestige-amber-dark: #D97706;
   --text-main: #111318;
   --text-sub: #616f89;
   --background-light: #f6f6f8;
@@ -237,6 +239,13 @@
 
 .text-gradient-gold {
   background: linear-gradient(to right, #D97706, #F59E0B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.text-gradient-prestige {
+  background: linear-gradient(to right, #F59E0B, #D97706);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;

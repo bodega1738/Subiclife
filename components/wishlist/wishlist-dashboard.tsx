@@ -169,7 +169,7 @@ export function WishlistDashboard() {
               </p>
               <Link 
                 href="/home" 
-                className="bg-subic-blue text-white font-bold py-4 px-10 rounded-full shadow-premium hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all"
+                className="bg-white text-subic-blue shadow-xl border border-gray-200 hover:shadow-2xl hover:bg-subic-blue hover:text-white transition-all font-bold py-4 px-10 rounded-full active:scale-95"
               >
                 Explore Offers
               </Link>

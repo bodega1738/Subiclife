@@ -9,7 +9,7 @@ import { useUser } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
 
 interface TierInfo {
-  id: "basic" | "premium" | "elite"
+  id: "premium" | "prestige" | "elite"
   name: string
   displayName: string
   price: number
@@ -23,22 +23,6 @@ interface TierInfo {
 
 const tiers: TierInfo[] = [
   {
-    id: "basic",
-    name: "Basic",
-    displayName: "Essential",
-    price: 550,
-    copy: "Foundation of Luxury",
-    tagline: "The curated Subic entry",
-    accentColor: "#135bec",
-    image: "/subic-bay-aerial-view-blue-ocean-tropical.jpg",
-    mainBenefits: [
-      "₱100k Accident Insurance",
-      "10% Partner Discounts",
-      "Digital Membership Card",
-      "Event Access"
-    ]
-  },
-  {
     id: "premium",
     name: "Premium",
     displayName: "Signature",
@@ -46,13 +30,29 @@ const tiers: TierInfo[] = [
     copy: "The Distinguished Choice",
     tagline: "Refined access for the elite guest",
     accentColor: "#D97706",
-    recommended: true,
     image: "/luxury-resort-suite-ocean-view-sunset.jpg",
     mainBenefits: [
       "₱500k Accident Insurance",
       "15% Partner Discounts",
       "24/7 AI Concierge",
       "Priority Event Access"
+    ]
+  },
+  {
+    id: "prestige",
+    name: "Prestige",
+    displayName: "Prestige",
+    price: 15500,
+    copy: "Elevated Luxury Experience",
+    tagline: "Where distinction meets privilege",
+    accentColor: "#F59E0B",
+    recommended: true,
+    image: "/prestige-card-large.png",
+    mainBenefits: [
+      "₱750k Accident Insurance",
+      "18% Partner Discounts",
+      "Priority Concierge Access",
+      "Exclusive Event Invitations"
     ]
   },
   {

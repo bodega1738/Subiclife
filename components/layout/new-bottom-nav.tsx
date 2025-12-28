@@ -18,6 +18,8 @@ export function NewBottomNav() {
   const { user } = useUser()
   const wishlistCount = user?.wishlist?.length || 0
 
+  if (pathname === '/concierge') return null
+
   return (
     <nav className="fixed bottom-6 left-6 right-6 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-[calc(100%-3rem)] md:max-w-md bg-[#111318]/90 dark:bg-card-dark text-white backdrop-blur-xl rounded-[2rem] shadow-premium border border-white/10 z-50 h-[72px] flex items-center justify-around px-2">
       {navItems.map((item) => {

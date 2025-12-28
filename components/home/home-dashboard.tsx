@@ -2,6 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Search, Star, ArrowRight, Heart, MapPin, SlidersHorizontal, Crown } from "lucide-react"
 import { partners, allOffers } from "@/lib/partners-data"
 import { useUser, discountPercentages } from "@/lib/user-context"
@@ -27,6 +28,27 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+function Typewriter({ text, speed = 50 }: { text: string; speed?: number }) {
+  const [displayText, setDisplayText] = React.useState('')
+  
+  React.useEffect(() => {
+    let i = 0
+    setDisplayText('')
+    const timer = setInterval(() => {
+      if (i < text.length) {
+        setDisplayText(text.substring(0, i + 1))
+        i++
+      } else {
+        clearInterval(timer)
+      }
+    }, speed)
+
+    return () => clearInterval(timer)
+  }, [text, speed])
+
+  return <span>{displayText}</span>
+}
+
 function getTimeBasedGreeting(): string {
   const hour = new Date().getHours()
   if (hour >= 5 && hour < 12) return "Good morning"
@@ -50,8 +72,10 @@ function isEligible(offer: Offer, tier: string): boolean {
 
 export function HomeDashboard() {
   const { user, toggleWishlist } = useUser()
+  const router = useRouter()
   const [bookingOpen, setBookingOpen] = React.useState(false)
   const [bookingOffer, setBookingOffer] = React.useState<Offer | null>(null)
+  const [searchQuery, setSearchQuery] = React.useState("")
 
   // Filter States
   const [filterCategories, setFilterCategories] = React.useState<string[]>([])
@@ -137,20 +161,35 @@ export function HomeDashboard() {
       <div className="absolute bottom-[10%] left-[30%] w-[350px] h-[350px] bg-[#10B981]/15 blur-[120px] rounded-full pointer-events-none"></div>
       
       <div className="relative z-10 h-full overflow-y-auto pb-28 no-scrollbar">
-        <div className="px-8 pt-16 pb-2">
-          <div className="flex justify-between items-start mb-8">
+        <div className="px-8 pt-8 pb-2">
+          <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-sans text-gray-900 dark:text-white tracking-tight leading-tight">
-                {getTimeBasedGreeting()},<br />
-                <span className="font-bold">{getFirstName(user?.name)}.</span>
+              <h1 className="text-xl font-sans font-bold text-gray-900 dark:text-white min-h-[1.75rem]">
+                <Typewriter text={`${getTimeBasedGreeting()}, ${getFirstName(user?.name)}.`} />
               </h1>
             </div>
-            <div className="flex items-center gap-3 mt-1">
+            <div className="flex items-center gap-3">
               <NotificationCenter userId={user?.id} className="text-gray-600 hover:text-gray-900" />
-              <TierBadge tier={user?.tier} />
             </div>
           </div>
           
+          <div className="mb-12">
+            <Link href="/pass" className="block group">
+                    <div className="relative w-full max-w-[520px] mx-auto scale-[1.26] transition-all duration-500 group-hover:scale-[1.29] group-active:scale-[1.23] rounded-3xl overflow-hidden border-none">
+                <img
+                  src={
+                    user?.tier === 'elite' ? '/elite-card-large.png' :
+                    user?.tier === 'prestige' ? '/prestige-card-large.png' :
+                    user?.tier === 'premium' ? '/premium-card-large.png' :
+                    '/basic-card-large.png'
+                  }
+                  alt={`${user?.tier || 'Basic'} Membership Card`}
+                  className="w-full h-auto drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] filter"
+                />
+              </div>
+            </Link>
+          </div>
+
           <div className="relative mb-8 group">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Search className="w-5 h-5 text-gray-400 group-focus-within:text-subic-blue transition-colors" />
@@ -159,7 +198,15 @@ export function HomeDashboard() {
               id="home-search"
               name="search"
               aria-label="Search for offers"
-              className="block w-full pl-12 pr-4 py-4 bg-white dark:bg-input-dark rounded-3xl text-sm text-gray-900 dark:text-white placeholder-gray-400 shadow-premium border-2 border-gray-100 focus:outline-none focus:border-subic-blue focus-within:shadow-xl transition-all" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && searchQuery.trim()) {
+                  e.preventDefault()
+                  router.push(`/concierge?query=${encodeURIComponent(searchQuery.trim())}`)
+                }
+              }}
+              className="block w-full pl-12 pr-4 py-4 bg-white dark:bg-input-dark rounded-3xl text-sm text-gray-900 dark:text-white placeholder-gray-400 shadow-premium border-none focus:outline-none focus:ring-0 focus-within:shadow-xl transition-all" 
               placeholder="Find me a yacht for Saturday..." 
               type="text" 
             />
@@ -242,7 +289,7 @@ export function HomeDashboard() {
         </div>
         <div className="px-8">
           <div className="mb-5 flex justify-between items-end">
-            <h2 className="text-3xl font-sans font-bold tracking-tight text-gray-900 dark:text-white">Available Offers</h2>
+            <h2 className="text-xl font-sans font-bold tracking-tight text-gray-900 dark:text-white">Available Offers</h2>
             <button 
               onClick={() => setFilterDialogOpen(true)}
               className="relative p-2 bg-white dark:bg-card-dark rounded-full shadow-premium border border-gray-100 dark:border-white/10 hover:bg-gray-50 transition-colors"
@@ -256,7 +303,7 @@ export function HomeDashboard() {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {filteredOffers.length === 0 ? (
               <div className="col-span-full py-20 text-center">
                 <p className="text-gray-500 font-sans">No offers match your filters. Try adjusting your criteria.</p>

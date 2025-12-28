@@ -44,6 +44,7 @@ const insuranceAmounts: Record<string, number> = {
   starter: 25000,
   basic: 100000,
   premium: 500000,
+  prestige: 750000,
   elite: 1000000,
 }
 
@@ -51,6 +52,7 @@ export const discountPercentages: Record<string, number> = {
   starter: 5,
   basic: 10,
   premium: 15,
+  prestige: 18,
   elite: 20,
 }
 
@@ -58,11 +60,13 @@ export const tierThresholds = {
   starter: 0,
   basic: 5000,
   premium: 15000,
+  prestige: 22500,
   elite: 30000,
 }
 
 function getTierFromPoints(points: number): MembershipTier {
   if (points >= 30000) return "elite"
+  if (points >= 22500) return "prestige"
   if (points >= 15000) return "premium"
   if (points >= 5000) return "basic"
   return "starter"
@@ -159,7 +163,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         tier,
         member_id: generateMemberId(tier),
         insuranceAmount: insuranceAmounts[tier || "starter"],
-        ecoContribution: tier === "elite" ? 12450 : tier === "premium" ? 5000 : tier === "basic" ? 2000 : 1000,
+        ecoContribution: tier === "elite" ? 12450 : tier === "prestige" ? 7500 : tier === "premium" ? 5000 : tier === "basic" ? 2000 : 1000,
       })
     }
   }

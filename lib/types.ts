@@ -1,4 +1,4 @@
-export type MembershipTier = "starter" | "basic" | "premium" | "elite" | null
+export type MembershipTier = "starter" | "basic" | "premium" | "prestige" | "elite" | null
 
 export interface Beneficiary {
   name: string

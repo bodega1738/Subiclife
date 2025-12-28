@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { MoreVertical, Send, Bot, Check, Loader2, Search, Sparkles } from "lucide-react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -27,6 +28,8 @@ const suggestions = [
 export function ConciergeChat() {
   const { user, addPoints } = useUser()
   const { toast } = useToast()
+  const searchParams = useSearchParams()
+  const router = useRouter()
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
@@ -47,6 +50,14 @@ export function ConciergeChat() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  useEffect(() => {
+    const query = searchParams.get('query')
+    if (query) {
+      handleSend(query)
+      router.replace('/concierge')
+    }
+  }, [searchParams, router])
 
   const handleSend = async (message: string) => {
     if (!message.trim() || isLoading) return
@@ -140,11 +151,10 @@ export function ConciergeChat() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] pt-12">
+    <div className="flex flex-col h-[calc(100vh-80px)] pt-20">
       {/* Suggestions Rail */}
       <div className="px-6 mb-6">
         <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="w-3 h-3 text-[#D97706]" />
           <p className="text-[10px] font-bold text-[#1F2937]/50 uppercase tracking-wider">Recommendations</p>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6">
