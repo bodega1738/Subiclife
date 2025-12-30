@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useState, useEffect, useRef, useMemo } from "react"
-import { Shield, Maximize2, X, CreditCard, Star, AlertTriangle, ChevronRight, Calendar, History, Clock } from "lucide-react"
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import { Shield, Maximize2, X, Anchor, Hotel, CreditCard, Star, RefreshCw, AlertTriangle, ChevronRight, Calendar, History, Wallet, Clock, Activity, Loader2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useUser, discountPercentages } from "@/lib/user-context"
 import { useMockDBStore } from "@/lib/mock-db"
@@ -16,7 +17,7 @@ import { CancelBookingModal } from "@/components/pass/cancel-booking-modal"
 import { CounterOfferResponseModal } from "@/components/booking/counter-offer-response-modal"
 import { PointsHistory } from "@/components/pass/points-history"
 import { ActivityTimeline } from "@/components/pass/activity-timeline"
-import { acceptCounterOffer, declineCounterOffer } from "@/lib/supabase-actions"
+import { acceptCounterOffer, declineCounterOffer, cancelBooking } from "@/lib/supabase-actions"
 import { useToast } from "@/hooks/use-toast"
 import { Booking, Partner, CounterOffer } from "@/lib/types"
 
@@ -218,7 +219,29 @@ export function MembershipPass() {
     cardRef.current.style.setProperty("--tilt-y", "0deg")
   }
 
+  // Scroll Shadow Effect - Disabled to allow gradient to show through
+  /*
+  useEffect(() => {
+    const handleScroll = () => {
+      const tabsList = document.getElementById('sticky-tabs-list')
+      if (tabsList) {
+        if (window.scrollY > 20) {
+          tabsList.classList.add('shadow-md', 'bg-white/95')
+          tabsList.classList.remove('bg-[#F9FAFB]', 'shadow-none')
+        } else {
+          tabsList.classList.remove('shadow-md', 'bg-white/95')
+          tabsList.classList.add('bg-[#F9FAFB]', 'shadow-none')
+        }
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+  */
+
+
   const tier = user?.tier || "starter"
+  const style = tierStyles[tier as keyof typeof tierStyles] || tierStyles.starter
   const pricing = tierPricing[tier as keyof typeof tierPricing] || tierPricing.starter
   const discount = discountPercentages[tier] || 5
   
@@ -430,68 +453,35 @@ export function MembershipPass() {
     )
   }
 
+
   return (
     <div className="min-h-screen pb-24 relative overflow-hidden">
-      {/* Brighter Golden Hour Mesh Gradient Background */}
-      <style jsx global>{`
-        @keyframes goldenFloat {
-          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.25; }
-          33% { transform: translate(40px, -60px) scale(1.15); opacity: 0.35; }
-          66% { transform: translate(-30px, 30px) scale(0.85); opacity: 0.2; }
-        }
-        @keyframes goldenFloatAlt {
-          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
-          33% { transform: translate(-50px, 40px) scale(0.9); opacity: 0.3; }
-          66% { transform: translate(30px, -50px) scale(1.1); opacity: 0.15; }
-        }
-        .animate-golden-float {
-          animation: goldenFloat 30s ease-in-out infinite;
-        }
-        .animate-golden-float-alt {
-          animation: goldenFloatAlt 35s ease-in-out infinite;
-        }
-      `}</style>
-      
-      <div className="fixed inset-0 -z-10 bg-[#111318] overflow-hidden">
-        {/* Luminous Top Region - Vibrant Gold & Yellow */}
-        <div className="absolute top-[-20%] left-[-15%] w-[80%] h-[60%] bg-[#FFB800] blur-[140px] rounded-full animate-golden-float opacity-30 will-change-transform" />
-        <div className="absolute top-[-5%] right-[-20%] w-[70%] h-[55%] bg-[#FFD700] blur-[120px] rounded-full animate-golden-float-alt opacity-25 will-change-transform" style={{ animationDelay: '-5s' }} />
-        
-        {/* Vibrant Middle Region - Amber & Light Gold */}
-        <div className="absolute top-[25%] left-[-10%] w-[60%] h-[45%] bg-[#F59E0B] blur-[130px] rounded-full animate-golden-float opacity-20 will-change-transform" style={{ animationDelay: '-12s' }} />
-        <div className="absolute top-[35%] right-[-5%] w-[65%] h-[50%] bg-[#fbbf24] blur-[110px] rounded-full animate-golden-float-alt opacity-20 will-change-transform" style={{ animationDelay: '-18s' }} />
+      {/* Liquid Gold Flag Animated Background */}
+      <div className="fixed inset-0 -z-10 bg-liquid-gold" />
 
-        {/* Deep Grounding - Darker tones to maintain contrast */}
-        <div className="absolute bottom-[-15%] left-[-10%] w-[80%] h-[60%] bg-[#1A1A1A] blur-[140px] rounded-full animate-golden-float opacity-40 will-change-transform" style={{ animationDelay: '-8s' }} />
-        <div className="absolute bottom-[-10%] right-[-15%] w-[75%] h-[55%] bg-[#262626] blur-[120px] rounded-full animate-golden-float-alt opacity-35 will-change-transform" style={{ animationDelay: '-22s' }} />
-        
-        {/* Subtle noise for texture */}
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.025] mix-blend-overlay pointer-events-none" />
-      </div>
-
-      {/* Sticky Tab List */}
+      {/* Sticky Tab List - Fully Integrated */}
       <div className="sticky top-0 z-40 px-6 pt-6 pb-3 -mx-0 transition-all duration-300" id="sticky-tabs-list">
         <div className="max-w-md mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="inline-flex items-center w-full bg-transparent rounded-full p-1.5 h-12 border-0 shadow-none overflow-hidden gap-2">
               <TabsTrigger
                 value="card"
-                className="flex-1 rounded-full h-full text-xs font-bold uppercase tracking-wide transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=inactive]:text-white/60 data-[state=inactive]:hover:text-white"
+                className="flex-1 rounded-full h-full text-xs font-bold uppercase tracking-wide transition-all duration-200 data-[state=active]:bg-[#1a1a1c] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-slate-900"
               >
                 Card
               </TabsTrigger>
               <TabsTrigger
                 value="bookings"
-                className="flex-1 rounded-full h-full text-xs font-bold uppercase tracking-wide transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=inactive]:text-white/60 data-[state=inactive]:hover:text-white relative"
+                className="flex-1 rounded-full h-full text-xs font-bold uppercase tracking-wide transition-all duration-200 data-[state=active]:bg-[#1a1a1c] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-slate-900 relative"
               >
                 Bookings
                 {pendingBookings.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-[#111318]" />
+                  <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-white" />
                 )}
               </TabsTrigger>
               <TabsTrigger
                 value="activity"
-                className="flex-1 rounded-full h-full text-xs font-bold uppercase tracking-wide transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=inactive]:text-white/60 data-[state=inactive]:hover:text-white"
+                className="flex-1 rounded-full h-full text-xs font-bold uppercase tracking-wide transition-all duration-200 data-[state=active]:bg-[#1a1a1c] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-slate-900"
               >
                 Points
               </TabsTrigger>
@@ -511,17 +501,17 @@ export function MembershipPass() {
 
             {/* Quick Stats - Glassmorphic */}
             <div className="grid grid-cols-3 gap-2.5">
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-3.5 text-center border border-white/10 shadow-premium">
-                <p className="text-[10px] text-white/40 font-bold mb-1 uppercase tracking-[0.2em]">Tier</p>
-                <p className="text-sm font-bold text-white capitalize">{tier}</p>
+              <div className="bg-white/40 backdrop-blur-xl rounded-2xl p-3.5 text-center border border-white/40 shadow-premium">
+                <p className="text-[10px] text-gray-500 font-bold mb-1 uppercase tracking-[0.2em]">Tier</p>
+                <p className="text-sm font-bold text-gray-900 capitalize">{tier}</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-3.5 text-center border border-white/10 shadow-premium">
-                <p className="text-[10px] text-white/40 font-bold mb-1 uppercase tracking-[0.2em]">Points</p>
-                <p className="text-sm font-bold text-white">{user?.points || 0}</p>
+              <div className="bg-white/40 backdrop-blur-xl rounded-2xl p-3.5 text-center border border-white/40 shadow-premium">
+                <p className="text-[10px] text-gray-500 font-bold mb-1 uppercase tracking-[0.2em]">Points</p>
+                <p className="text-sm font-bold text-gray-900">{user?.points || 0}</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-3.5 text-center border border-white/10 shadow-premium">
-                <p className="text-[10px] text-white/40 font-bold mb-1 uppercase tracking-[0.2em]">Discount</p>
-                <p className="text-sm font-bold text-white">{discount}%</p>
+              <div className="bg-white/40 backdrop-blur-xl rounded-2xl p-3.5 text-center border border-white/40 shadow-premium">
+                <p className="text-[10px] text-gray-500 font-bold mb-1 uppercase tracking-[0.2em]">Discount</p>
+                <p className="text-sm font-bold text-gray-900">{discount}%</p>
               </div>
             </div>
 
@@ -530,9 +520,9 @@ export function MembershipPass() {
               <BFFButton
                 decorativeText="01"
                 onClick={() => setIsFullscreen(true)}
-                className="w-full h-14 gap-4 justify-start px-5 bg-white/5 border-white/10 hover:bg-white/10 text-white"
+                className="w-full h-14 gap-4 justify-start px-5"
               >
-                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 shadow-lg border border-white/10">
+                <div className="w-10 h-10 rounded-xl bg-gray-900 flex items-center justify-center flex-shrink-0 shadow-lg border border-white/10">
                   <Maximize2 className="w-5 h-5 text-white" />
                 </div>
                 Fullscreen View
@@ -542,9 +532,9 @@ export function MembershipPass() {
                 <BFFButton
                   decorativeText="BFF"
                   onClick={() => {/* Navigate to upgrade/purchase screen */}}
-                  className="w-full h-14 gap-4 justify-start px-5 bg-amber-500/10 border-amber-500/20 hover:bg-amber-500/20 text-white"
+                  className="w-full h-14 gap-4 justify-start px-5"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center flex-shrink-0 shadow-lg border border-white/10">
+                  <div className="w-10 h-10 rounded-xl bg-[#135bec] flex items-center justify-center flex-shrink-0 shadow-lg border border-white/10">
                     <Star className="w-5 h-5 text-white" />
                   </div>
                   Upgrade Membership
@@ -554,9 +544,9 @@ export function MembershipPass() {
               <BFFButton
                 decorativeText="02"
                 onClick={() => {/* Navigate to transaction history */}}
-                className="w-full h-14 gap-4 justify-start px-5 bg-white/5 border-white/10 hover:bg-white/10 text-white"
+                className="w-full h-14 gap-4 justify-start px-5"
               >
-                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 shadow-lg border border-white/10">
+                <div className="w-10 h-10 rounded-xl bg-gray-900 flex items-center justify-center flex-shrink-0 shadow-lg border border-white/10">
                   <Clock className="w-5 h-5 text-white" />
                 </div>
                 Recent Activity
@@ -564,7 +554,7 @@ export function MembershipPass() {
             </div>
 
             {/* Valid Until Card - Glassmorphic */}
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-5 border border-white/10 shadow-premium relative overflow-hidden">
+            <div className="bg-gray-900 backdrop-blur-xl rounded-2xl p-5 border border-white/10 shadow-premium relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent pointer-events-none" />
               <div className="flex items-center justify-between relative z-10">
                 <div>
@@ -601,16 +591,16 @@ export function MembershipPass() {
                   className={`
                     px-6 py-3 rounded-full text-xs font-bold transition-all duration-300 flex items-center gap-2.5 whitespace-nowrap border
                     ${activeBookingSubTab === tab.id 
-                      ? 'bg-white text-gray-900 border-white shadow-lg scale-105' 
-                      : 'bg-white/10 text-white/60 backdrop-blur-md border-white/10 hover:bg-white/20 hover:text-white'}
+                      ? 'bg-gray-900 text-white border-gray-900 shadow-lg scale-105' 
+                      : 'bg-white/40 text-gray-500 backdrop-blur-md border-white/40 hover:bg-white/60'}
                   `}
                 >
-                  <tab.icon className={`w-4 h-4 ${activeBookingSubTab === tab.id ? 'text-gray-900' : 'text-white/40'}`} />
+                  <tab.icon className={`w-4 h-4 ${activeBookingSubTab === tab.id ? 'text-white' : 'text-gray-400'}`} />
                   {tab.label}
                   {tab.count !== undefined && tab.count > 0 && (
                     <span className={`
                       ml-1 px-2 py-0.5 rounded-full text-[10px] 
-                      ${activeBookingSubTab === tab.id ? 'bg-gray-900/10 text-gray-900' : 'bg-white/10 text-white'}
+                      ${activeBookingSubTab === tab.id ? 'bg-white/20 text-white' : 'bg-gray-900/10 text-gray-900'}
                     `}>
                       {tab.count}
                     </span>
@@ -638,7 +628,7 @@ export function MembershipPass() {
                   ))
                 ) : (
                   <EmptyState 
-                    icon={<Calendar className="w-16 h-16 text-white/20" />} 
+                    icon={<Calendar className="w-16 h-16 text-gray-300" />} 
                     title="No upcoming bookings" 
                     desc="Ready to plan your next adventure?" 
                     action="Explore Partners"
@@ -670,7 +660,7 @@ export function MembershipPass() {
                   ))
                 ) : (
                   <EmptyState 
-                    icon={<Clock className="w-16 h-16 text-white/20" />} 
+                    icon={<Clock className="w-16 h-16 text-gray-300" />} 
                     title="No pending requests" 
                     desc="All your bookings have been processed."
                   />
@@ -692,7 +682,7 @@ export function MembershipPass() {
                   ))
                 ) : (
                   <EmptyState 
-                    icon={<History className="w-16 h-16 text-white/20" />} 
+                    icon={<History className="w-16 h-16 text-gray-300" />} 
                     title="No booking history" 
                     desc="Your past adventures will appear here."
                   />
@@ -709,10 +699,10 @@ export function MembershipPass() {
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                <div className="w-full border-t border-white/10" />
+                <div className="w-full border-t border-gray-200" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-[#111318] px-4 text-xs font-bold text-white/40 uppercase tracking-wider">
+                <span className="bg-gradient-to-b from-[#f5d6c6] via-[#d4e4ec] to-[#c8b8a8] px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
                   Recent Activity
                 </span>
               </div>
@@ -750,14 +740,14 @@ export function MembershipPass() {
 
 function EmptyState({ icon, title, desc, action }: { icon: React.ReactNode, title: string, desc: string, action?: string }) {
   return (
-    <div className="py-20 flex flex-col items-center justify-center text-center bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 shadow-premium animate-in fade-in zoom-in-95 duration-500">
-      <div className="mb-6 p-5 bg-white/10 rounded-full shadow-2xl ring-8 ring-white/5">
+    <div className="py-20 flex flex-col items-center justify-center text-center bg-white/40 backdrop-blur-xl rounded-[2.5rem] border border-white/40 shadow-premium animate-in fade-in zoom-in-95 duration-500">
+      <div className="mb-6 p-5 bg-gray-900 rounded-full shadow-2xl ring-8 ring-white/10">
         {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { className: "w-8 h-8 text-white" }) : icon}
       </div>
-      <h3 className="text-xl font-bold text-white mb-2 tracking-tight">{title}</h3>
-      <p className="text-sm text-white/60 mb-8 max-w-[240px] leading-relaxed">{desc}</p>
+      <h3 className="text-xl font-bold text-gray-900 mb-2 tracking-tight">{title}</h3>
+      <p className="text-sm text-gray-500 mb-8 max-w-[240px] leading-relaxed">{desc}</p>
       {action && (
-        <Button className="rounded-full px-8 bg-white text-gray-900 hover:bg-gray-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold text-xs uppercase tracking-widest h-12">
+        <Button className="rounded-full px-8 bg-gray-900 text-white hover:bg-black shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold text-xs uppercase tracking-widest h-12">
           {action}
         </Button>
       )}

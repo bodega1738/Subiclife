@@ -426,3 +426,24 @@
 .text-shadow-sm {
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
+
+@keyframes liquid-gold-flow {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 120px 120px;
+  }
+}
+
+.bg-liquid-gold {
+  background-image: repeating-linear-gradient(
+    45deg,
+    #000000 0px,
+    #000000 20px,
+    #FFD700 40px,
+    #000000 60px
+  );
+  background-size: 120px 120px;
+  animation: liquid-gold-flow 15s linear infinite;
+}
