@@ -72,6 +72,7 @@ function isEligible(offer: Offer, tier: string): boolean {
 
 export function HomeDashboard() {
   const { user, toggleWishlist } = useUser()
+  const userName = user?.name || 'Premium Member';
   const router = useRouter()
   const [bookingOpen, setBookingOpen] = React.useState(false)
   const [bookingOffer, setBookingOffer] = React.useState<Offer | null>(null)
@@ -183,9 +184,18 @@ export function HomeDashboard() {
                     user?.tier === 'premium' ? '/premium-card-large.png' :
                     '/basic-card-large.png'
                   }
-                  alt={`${user?.tier || 'Basic'} Membership Card`}
+                  alt={`${user?.tier || 'Basic'} tier membership card - Tap to view your pass details`}
                   className="w-full h-auto drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] filter"
                 />
+                {/* Personalized Name - Minimalist Premium Style */}
+                <div className="absolute bottom-10 left-8 z-10 text-left">
+                  <p className="text-[9px] md:text-[10px] text-white/60 uppercase tracking-[0.25em] font-medium mb-1 font-sans drop-shadow-sm">
+                    Member
+                  </p>
+                  <p className="text-[9px] md:text-[11px] text-white/80 uppercase tracking-[0.25em] font-medium font-sans drop-shadow-sm">
+                    {userName}
+                  </p>
+                </div>
               </div>
             </Link>
           </div>
@@ -221,7 +231,7 @@ export function HomeDashboard() {
             {curatedPartners.map((partner, index) => (
               <div key={`${partner.id}-${index}`} className="snap-center flex-shrink-0 relative w-[280px] h-[380px] rounded-3xl overflow-hidden shadow-xl shadow-gray-900/20 group cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl">
                 <img 
-                  alt={partner.name} 
+                  alt={`${partner.name} - Premium ${partner.category} experience in Subic Bay with exclusive member discounts`}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                   src={partner.image || partner.logo || "/placeholder.jpg"} 
                 />
@@ -323,7 +333,7 @@ export function HomeDashboard() {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <img 
-                    alt={item.partnerName} 
+                    alt={`${item.partnerName} - ${item.title}: ${item.description} with ${item.discount}% member discount in Subic Bay${item.isEliteExclusive ? ' Elite Exclusive' : ''}`}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                     src={item.image || "/placeholder.jpg"} 
                   />

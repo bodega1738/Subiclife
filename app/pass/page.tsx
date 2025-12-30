@@ -19,7 +19,7 @@ export default function PassPage() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB]">
+    <div className="min-h-screen">
       <MembershipPass />
     </div>
   )

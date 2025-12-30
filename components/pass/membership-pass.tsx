@@ -1,22 +1,22 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import { Shield, Maximize2, X, Anchor, Hotel, CreditCard, Star, RefreshCw, AlertTriangle, ChevronRight, Calendar, History, Wallet, Clock, Activity, Loader2 } from "lucide-react"
+import React, { useState, useEffect, useRef, useMemo } from "react"
+import { Shield, Maximize2, X, CreditCard, Star, AlertTriangle, ChevronRight, Calendar, History, Clock } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useUser, discountPercentages } from "@/lib/user-context"
 import { useMockDBStore } from "@/lib/mock-db"
 import { QRCodeSVG } from "qrcode.react"
+import { BFFButton } from "./bff-button"
 import { BookingCard } from "@/components/pass/booking-card"
 import { BookingDetailModal } from "@/components/pass/booking-detail-modal"
 import { CancelBookingModal } from "@/components/pass/cancel-booking-modal"
 import { CounterOfferResponseModal } from "@/components/booking/counter-offer-response-modal"
 import { PointsHistory } from "@/components/pass/points-history"
 import { ActivityTimeline } from "@/components/pass/activity-timeline"
-import { acceptCounterOffer, declineCounterOffer, cancelBooking } from "@/lib/supabase-actions"
+import { acceptCounterOffer, declineCounterOffer } from "@/lib/supabase-actions"
 import { useToast } from "@/hooks/use-toast"
 import { Booking, Partner, CounterOffer } from "@/lib/types"
 
@@ -218,27 +218,7 @@ export function MembershipPass() {
     cardRef.current.style.setProperty("--tilt-y", "0deg")
   }
 
-  // Scroll Shadow Effect
-  useEffect(() => {
-    const handleScroll = () => {
-      const tabsList = document.getElementById('sticky-tabs-list')
-      if (tabsList) {
-        if (window.scrollY > 20) {
-          tabsList.classList.add('shadow-md', 'bg-white/95')
-          tabsList.classList.remove('bg-[#F9FAFB]', 'shadow-none')
-        } else {
-          tabsList.classList.remove('shadow-md', 'bg-white/95')
-          tabsList.classList.add('bg-[#F9FAFB]', 'shadow-none')
-        }
-      }
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-
   const tier = user?.tier || "starter"
-  const style = tierStyles[tier as keyof typeof tierStyles] || tierStyles.starter
   const pricing = tierPricing[tier as keyof typeof tierPricing] || tierPricing.starter
   const discount = discountPercentages[tier] || 5
   
@@ -254,8 +234,8 @@ export function MembershipPass() {
 
   // Pass Card Component
   const PassCard = ({ className = "" }: { className?: string }) => (
-    <div 
-      className={`relative w-full aspect-[4/5] sm:aspect-[1.586/1] max-w-sm sm:max-w-md mx-auto perspective-1500 ${className}`}
+    <div
+      className={`relative w-full aspect-[3/4] sm:aspect-[1.4/1] max-w-sm mx-auto perspective-1500 ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={() => setIsFlipped(!isFlipped)}
@@ -268,75 +248,82 @@ export function MembershipPass() {
         }}
       >
         {/* FRONT FACE */}
-        <Card className={`absolute inset-0 w-full h-full backface-hidden overflow-hidden rounded-[2rem] border ${style.border} shadow-[0_8px_32px_-4px_rgba(0,0,0,0.15)] hover:shadow-[0_12px_40px_-4px_rgba(0,0,0,0.2)] transition-shadow duration-300`}>
-          {/* Background & Effects */}
-          <div className="absolute inset-0" style={{ background: style.background }} />
-          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay" />
+        <Card className={`absolute inset-0 w-full h-full backface-hidden overflow-hidden rounded-[2.5rem] border border-white/20 bg-gray-900/40 backdrop-blur-2xl shadow-premium transition-shadow duration-300`}>
+          {/* Gray Glassmorphic Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-500/10 via-gray-700/5 to-transparent" />
+          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.05] mix-blend-overlay" />
           
-          {/* Elite Glow Effect */}
-          {tier === 'elite' && (
-            <>
-              <div className="absolute -top-20 -right-20 w-80 h-80 bg-amber-500/20 blur-[100px] rounded-full" />
-              <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-amber-600/10 blur-[80px] rounded-full" />
-            </>
-          )}
-          
-          <CardContent className="relative h-full flex flex-col p-7 z-10">
+          {/* Reflective light effect */}
+          <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-gradient-to-br from-white/10 via-transparent to-transparent rotate-12 pointer-events-none" />
+
+          <CardContent className="relative h-full flex flex-col p-8 z-10">
              {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
-                  <img src="/icon.svg" alt="Logo" className="w-5 h-5 brightness-0 invert" />
+                  <Shield className="w-4 h-4 text-white/80" />
                 </div>
-                <span className="text-sm font-bold tracking-tight text-white">Subic.Life</span>
+                <span className="text-[10px] font-bold text-white/40 tracking-[0.3em] uppercase">Subic.Life</span>
               </div>
-              <Badge variant="outline" className={`bg-white/5 backdrop-blur-md border-white/20 text-[10px] tracking-[0.2em] font-bold ${style.color}`}>
-                {style.label}
+              <Badge className="bg-white/10 hover:bg-white/20 text-white border-white/10 text-[9px] px-3 py-1 rounded-full backdrop-blur-md tracking-wider">
+                {tier.toUpperCase()}
               </Badge>
             </div>
 
             {/* Member Info */}
-            <div className="mb-auto">
-               <h2 className="text-3xl font-sans font-bold text-white tracking-tight mb-1">
+            <div>
+              <h2 className="text-3xl font-sans font-bold text-white tracking-tight leading-tight">
                 {user?.name || "Guest"}
               </h2>
-              <p className="text-xs font-mono text-white/60 tracking-[0.15em] mb-3">
-                {user?.member_id || "SL-2025-DEMO-0000"}
-              </p>
+              <div className="flex items-center gap-3 mt-2">
+                <p className="text-[10px] font-mono text-white/40 tracking-[0.2em]">
+                  {user?.member_id || "SL-2025-DEMO-0000"}
+                </p>
+                <div className="h-px w-8 bg-white/10" />
+                <p className="text-[9px] font-bold text-white/60 tracking-wider">
+                  MEMBER SINCE 2025
+                </p>
+              </div>
               {isExpiringSoon && (
-                <div className="inline-flex items-center gap-1.5 bg-red-500/20 border border-red-500/30 text-red-200 text-[10px] font-bold px-3 py-1 rounded-full backdrop-blur-sm animate-pulse">
-                   <AlertTriangle className="w-3 h-3" />
-                   RENEW SOON
+                <div className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-200 text-[10px] font-bold px-3 py-1 rounded-full backdrop-blur-sm mt-4 border border-amber-500/20">
+                  <AlertTriangle className="w-3 h-3" />
+                  RENEW SOON
                 </div>
               )}
             </div>
 
             {/* QR Code Section */}
-            <div className="flex flex-col items-center justify-end mt-4">
-              <div className="relative p-1 bg-gradient-to-br from-white/20 to-white/5 rounded-2xl backdrop-blur-md border border-white/10 shadow-xl mb-4 group overflow-hidden">
-                <div className="bg-white p-3 rounded-xl relative z-10">
-                   <QRCodeSVG value={qrValue} size={140} level="H" />
-                </div>
-                {/* Shimmer Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer pointer-events-none" />
-                {/* Scanner Line */}
-                <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none z-20">
-                  <div className="w-full h-1 bg-blue-400/50 blur-sm absolute top-0 animate-[scan_3s_ease-in-out_infinite]" />
+            <div className="flex flex-col items-center mt-auto">
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-white/5 rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="bg-white/95 rounded-2xl p-4 shadow-2xl relative">
+                  <QRCodeSVG value={qrValue} size={160} level="H" bgColor="#FFFFFF" fgColor="#111318" />
                 </div>
               </div>
-              
-              <div className="w-full max-w-[160px] flex flex-col gap-1.5">
-                <div className="flex items-center justify-between text-[9px] text-white/50 font-bold tracking-widest uppercase">
-                   <span>Security Code</span>
-                   <span className={`font-mono transition-colors duration-300 ${validity < 10 ? 'text-red-400' : validity < 20 ? 'text-yellow-400' : 'text-white'}`}>
-                     {validity}s
-                   </span>
-                </div>
-                <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(255,255,255,0.5)] ${validity < 10 ? 'bg-red-400' : 'bg-white/80'}`} 
-                    style={{ width: `${(validity / 30) * 100}%` }} 
+
+              {/* Minimal Timer */}
+              <div className="w-[160px] mt-6">
+                <div className="h-[1.5px] w-full bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
+                  <div
+                    className={`h-full transition-all duration-[800ms] ease-out ${
+                      validity < 10 ? 'bg-red-400' :
+                      validity < 20 ? 'bg-amber-400' :
+                      'bg-white/40'
+                    }`}
+                    style={{ width: `${(validity / 30) * 100}%` }}
                   />
+                </div>
+                <div className="flex justify-between items-center mt-2 px-1">
+                  <p className={`text-[9px] font-mono transition-all duration-500 ${
+                    validity < 10 ? 'text-red-300' : 'text-white/20'
+                  }`}>
+                    SECURE_KEY
+                  </p>
+                  <p className={`text-[9px] font-mono transition-all duration-500 ${
+                    validity < 10 ? 'text-red-300' : 'text-white/40'
+                  }`}>
+                    {validity}s
+                  </p>
                 </div>
               </div>
             </div>
@@ -344,8 +331,8 @@ export function MembershipPass() {
         </Card>
 
         {/* BACK FACE */}
-        <Card 
-          className="absolute inset-0 w-full h-full backface-hidden overflow-hidden rounded-[2rem] border-0 bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
+        <Card
+          className="absolute inset-0 w-full h-full backface-hidden overflow-hidden rounded-[1.5rem] border-0 bg-white/90 backdrop-blur-xl shadow-[0_8px_40px_-8px_rgba(0,0,0,0.15)]"
           style={{ transform: "rotateY(180deg)" }}
         >
            {/* Subtle gradient overlay */}
@@ -363,8 +350,8 @@ export function MembershipPass() {
                 <div className="space-y-3">
                    <h4 className="text-[10px] text-slate-400 font-[600] tracking-[0.2em] uppercase">Coverage</h4>
                    <div className="flex items-center gap-3 group">
-                      <div className="p-2.5 bg-blue-50 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                        <Shield className="w-5 h-5 text-blue-600" />
+                      <div className="transition-transform duration-300 group-hover:scale-110">
+                        <Shield className="w-6 h-6 text-blue-600" />
                       </div>
                       <div>
                         <p className="text-sm font-bold text-slate-900">₱{pricing.insurance.toLocaleString()}</p>
@@ -376,8 +363,8 @@ export function MembershipPass() {
                 <div className="space-y-3">
                    <h4 className="text-[10px] text-slate-400 font-[600] tracking-[0.2em] uppercase">Benefits</h4>
                    <div className="flex items-center gap-3 group">
-                      <div className="p-2.5 bg-green-50 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                        <CreditCard className="w-5 h-5 text-green-600" />
+                      <div className="transition-transform duration-300 group-hover:scale-110">
+                        <CreditCard className="w-6 h-6 text-green-600" />
                       </div>
                       <div>
                         <p className="text-sm font-bold text-slate-900">{discount}% Discount</p>
@@ -386,8 +373,8 @@ export function MembershipPass() {
                    </div>
                    
                    <div className="flex items-center gap-3 group">
-                      <div className="p-2.5 bg-yellow-50 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                        <Star className="w-5 h-5 text-yellow-600" />
+                      <div className="transition-transform duration-300 group-hover:scale-110">
+                        <Star className="w-6 h-6 text-yellow-600" />
                       </div>
                       <div>
                         <p className="text-sm font-bold text-slate-900">{user?.points || 0} Points</p>
@@ -436,59 +423,75 @@ export function MembershipPass() {
           <X className="w-8 h-8" />
         </button>
         <PassCard className="scale-[1.15] sm:scale-[1.3]" />
-        <p className="text-white/40 text-xs mt-8 animate-pulse font-medium tracking-widest uppercase">
+        <p className="text-white/40 text-xs mt-8 font-medium tracking-widest uppercase">
           Tap card to flip • Press ESC to close
         </p>
       </div>
     )
   }
 
-  const benefits = [
-    {
-      icon: <Shield className="w-6 h-6 text-blue-600" />,
-      title: "Insurance",
-      desc: `₱${pricing.insurance.toLocaleString()} Coverage`,
-      bg: "bg-gradient-to-br from-blue-50 to-white"
-    },
-    {
-      icon: <CreditCard className="w-6 h-6 text-green-600" />,
-      title: "Discount",
-      desc: `${discount}% at 50+ Partners`,
-      bg: "bg-gradient-to-br from-green-50 to-white"
-    },
-    {
-      icon: <Star className="w-6 h-6 text-yellow-600" />,
-      title: "Points",
-      desc: `${user?.points || 0} Points Balance`,
-      bg: "bg-gradient-to-br from-yellow-50 to-white"
-    }
-  ]
-
   return (
-    <div className="min-h-screen bg-[#F9FAFB] pb-24">
+    <div className="min-h-screen pb-24 relative overflow-hidden">
+      {/* Brighter Golden Hour Mesh Gradient Background */}
+      <style jsx global>{`
+        @keyframes goldenFloat {
+          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.25; }
+          33% { transform: translate(40px, -60px) scale(1.15); opacity: 0.35; }
+          66% { transform: translate(-30px, 30px) scale(0.85); opacity: 0.2; }
+        }
+        @keyframes goldenFloatAlt {
+          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+          33% { transform: translate(-50px, 40px) scale(0.9); opacity: 0.3; }
+          66% { transform: translate(30px, -50px) scale(1.1); opacity: 0.15; }
+        }
+        .animate-golden-float {
+          animation: goldenFloat 30s ease-in-out infinite;
+        }
+        .animate-golden-float-alt {
+          animation: goldenFloatAlt 35s ease-in-out infinite;
+        }
+      `}</style>
+      
+      <div className="fixed inset-0 -z-10 bg-[#111318] overflow-hidden">
+        {/* Luminous Top Region - Vibrant Gold & Yellow */}
+        <div className="absolute top-[-20%] left-[-15%] w-[80%] h-[60%] bg-[#FFB800] blur-[140px] rounded-full animate-golden-float opacity-30 will-change-transform" />
+        <div className="absolute top-[-5%] right-[-20%] w-[70%] h-[55%] bg-[#FFD700] blur-[120px] rounded-full animate-golden-float-alt opacity-25 will-change-transform" style={{ animationDelay: '-5s' }} />
+        
+        {/* Vibrant Middle Region - Amber & Light Gold */}
+        <div className="absolute top-[25%] left-[-10%] w-[60%] h-[45%] bg-[#F59E0B] blur-[130px] rounded-full animate-golden-float opacity-20 will-change-transform" style={{ animationDelay: '-12s' }} />
+        <div className="absolute top-[35%] right-[-5%] w-[65%] h-[50%] bg-[#fbbf24] blur-[110px] rounded-full animate-golden-float-alt opacity-20 will-change-transform" style={{ animationDelay: '-18s' }} />
+
+        {/* Deep Grounding - Darker tones to maintain contrast */}
+        <div className="absolute bottom-[-15%] left-[-10%] w-[80%] h-[60%] bg-[#1A1A1A] blur-[140px] rounded-full animate-golden-float opacity-40 will-change-transform" style={{ animationDelay: '-8s' }} />
+        <div className="absolute bottom-[-10%] right-[-15%] w-[75%] h-[55%] bg-[#262626] blur-[120px] rounded-full animate-golden-float-alt opacity-35 will-change-transform" style={{ animationDelay: '-22s' }} />
+        
+        {/* Subtle noise for texture */}
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.025] mix-blend-overlay pointer-events-none" />
+      </div>
+
       {/* Sticky Tab List */}
-      <div className="sticky top-0 z-40 px-6 pt-4 pb-2 -mx-0 transition-all duration-300 backdrop-blur-xl" id="sticky-tabs-list">
+      <div className="sticky top-0 z-40 px-6 pt-6 pb-3 -mx-0 transition-all duration-300" id="sticky-tabs-list">
         <div className="max-w-md mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="inline-flex items-center w-full bg-slate-100/80 rounded-full p-1 h-14 border border-slate-200/50 shadow-sm overflow-hidden">
-              <TabsTrigger 
-                value="card" 
-                className="flex-1 rounded-full h-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 data-[state=active]:bg-[#111318] data-[state=active]:text-white data-[state=active]:shadow-md hover:text-[#135bec]"
+            <TabsList className="inline-flex items-center w-full bg-transparent rounded-full p-1.5 h-12 border-0 shadow-none overflow-hidden gap-2">
+              <TabsTrigger
+                value="card"
+                className="flex-1 rounded-full h-full text-xs font-bold uppercase tracking-wide transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=inactive]:text-white/60 data-[state=inactive]:hover:text-white"
               >
                 Card
               </TabsTrigger>
-              <TabsTrigger 
-                value="bookings" 
-                className="flex-1 rounded-full h-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 data-[state=active]:bg-[#111318] data-[state=active]:text-white data-[state=active]:shadow-md hover:text-[#135bec] relative"
+              <TabsTrigger
+                value="bookings"
+                className="flex-1 rounded-full h-full text-xs font-bold uppercase tracking-wide transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=inactive]:text-white/60 data-[state=inactive]:hover:text-white relative"
               >
                 Bookings
                 {pendingBookings.length > 0 && (
-                  <span className="absolute top-3 right-3 sm:right-6 w-2 h-2 rounded-full bg-[#135bec] ring-2 ring-white animate-pulse" />
+                  <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-[#111318]" />
                 )}
               </TabsTrigger>
-              <TabsTrigger 
-                value="activity" 
-                className="flex-1 rounded-full h-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 data-[state=active]:bg-[#111318] data-[state=active]:text-white data-[state=active]:shadow-md hover:text-[#135bec]"
+              <TabsTrigger
+                value="activity"
+                className="flex-1 rounded-full h-full text-xs font-bold uppercase tracking-wide transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=inactive]:text-white/60 data-[state=inactive]:hover:text-white"
               >
                 Points
               </TabsTrigger>
@@ -500,61 +503,84 @@ export function MembershipPass() {
       <div className="max-w-md mx-auto px-6 pt-4">
         {/* My Card Tab */}
         {activeTab === "card" && (
-          <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 fade-in">
+          <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 fade-in">
+            {/* Membership Card */}
             <div>
               <PassCard />
-              <Button
-                onClick={() => setIsFullscreen(true)}
-                variant="outline"
-                className="w-full mt-8 h-12 gap-2 rounded-xl border-slate-200 text-slate-600 font-medium tracking-tight hover:bg-slate-50 transition-colors shadow-sm"
-              >
-                <Maximize2 className="w-4 h-4" />
-                Fullscreen View
-              </Button>
             </div>
 
-            {/* Benefits Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              {benefits.map((benefit, i) => (
-                <Card
-                  key={i}
-                  className={`border border-gray-100/50 shadow-sm rounded-2xl p-5 transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02] cursor-pointer group ${benefit.bg}`}
+            {/* Quick Stats - Glassmorphic */}
+            <div className="grid grid-cols-3 gap-2.5">
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-3.5 text-center border border-white/10 shadow-premium">
+                <p className="text-[10px] text-white/40 font-bold mb-1 uppercase tracking-[0.2em]">Tier</p>
+                <p className="text-sm font-bold text-white capitalize">{tier}</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-3.5 text-center border border-white/10 shadow-premium">
+                <p className="text-[10px] text-white/40 font-bold mb-1 uppercase tracking-[0.2em]">Points</p>
+                <p className="text-sm font-bold text-white">{user?.points || 0}</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-3.5 text-center border border-white/10 shadow-premium">
+                <p className="text-[10px] text-white/40 font-bold mb-1 uppercase tracking-[0.2em]">Discount</p>
+                <p className="text-sm font-bold text-white">{discount}%</p>
+              </div>
+            </div>
+
+            {/* Action Buttons - Glassmorphic */}
+            <div className="space-y-2.5">
+              <BFFButton
+                decorativeText="01"
+                onClick={() => setIsFullscreen(true)}
+                className="w-full h-14 gap-4 justify-start px-5 bg-white/5 border-white/10 hover:bg-white/10 text-white"
+              >
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 shadow-lg border border-white/10">
+                  <Maximize2 className="w-5 h-5 text-white" />
+                </div>
+                Fullscreen View
+              </BFFButton>
+
+              {tier !== "elite" && (
+                <BFFButton
+                  decorativeText="BFF"
+                  onClick={() => {/* Navigate to upgrade/purchase screen */}}
+                  className="w-full h-14 gap-4 justify-start px-5 bg-amber-500/10 border-amber-500/20 hover:bg-amber-500/20 text-white"
                 >
-                  <div className="mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 origin-left">
-                    {benefit.icon}
+                  <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center flex-shrink-0 shadow-lg border border-white/10">
+                    <Star className="w-5 h-5 text-white" />
                   </div>
-                  <h4 className="text-[10px] font-[700] text-slate-400 uppercase tracking-[0.2em] mb-1.5">
-                    {benefit.title}
-                  </h4>
-                  <p className="text-sm sm:text-base font-bold text-slate-900 tracking-tight leading-tight">{benefit.desc}</p>
-                </Card>
-              ))}
-              {(tier === "premium" || tier === "elite") && (
-                <Card className="border border-orange-100/50 shadow-sm rounded-2xl bg-gradient-to-br from-orange-50 to-white p-5 hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
-                  <div className="mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 origin-left">
-                    <Hotel className="w-6 h-6 text-orange-600" />
-                  </div>
-                  <h4 className="text-[10px] font-[700] text-orange-400 uppercase tracking-[0.2em] mb-1.5">
-                    Bonus
-                  </h4>
-                  <p className="text-sm sm:text-base font-bold text-slate-900 tracking-tight leading-tight">
-                    1 Free Hotel Night
-                  </p>
-                </Card>
+                  Upgrade Membership
+                </BFFButton>
               )}
-              {tier === "elite" && (
-                <Card className="border border-cyan-100/50 shadow-sm rounded-2xl bg-gradient-to-br from-cyan-50 to-white p-5 hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 group cursor-pointer">
-                  <div className="mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 origin-left">
-                    <Anchor className="w-6 h-6 text-cyan-600" />
+
+              <BFFButton
+                decorativeText="02"
+                onClick={() => {/* Navigate to transaction history */}}
+                className="w-full h-14 gap-4 justify-start px-5 bg-white/5 border-white/10 hover:bg-white/10 text-white"
+              >
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 shadow-lg border border-white/10">
+                  <Clock className="w-5 h-5 text-white" />
+                </div>
+                Recent Activity
+              </BFFButton>
+            </div>
+
+            {/* Valid Until Card - Glassmorphic */}
+            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-5 border border-white/10 shadow-premium relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent pointer-events-none" />
+              <div className="flex items-center justify-between relative z-10">
+                <div>
+                  <p className="text-[10px] text-white/40 font-bold mb-1 uppercase tracking-[0.2em]">Valid Until</p>
+                  <p className="text-sm font-bold text-white tracking-tight">{validUntilStr}</p>
+                </div>
+                {isExpiringSoon ? (
+                  <Badge className="bg-red-500/20 border border-red-500/30 text-red-200 text-[10px] px-3 py-1 rounded-full backdrop-blur-md">
+                    Expiring Soon
+                  </Badge>
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/10">
+                    <Shield className="w-4 h-4 text-white/40" />
                   </div>
-                  <h4 className="text-[10px] font-[700] text-cyan-400 uppercase tracking-[0.2em] mb-1.5">
-                    Elite Perk
-                  </h4>
-                  <p className="text-sm sm:text-base font-bold text-slate-900 tracking-tight leading-tight">
-                    Yacht Cruise
-                  </p>
-                </Card>
-              )}
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -562,8 +588,8 @@ export function MembershipPass() {
         {/* Bookings Tab */}
         {activeTab === "bookings" && (
           <div className="animate-in slide-in-from-right-4 duration-300 fade-in">
-             {/* Sub-tabs */}
-            <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-1">
+             {/* Sub-tabs - Glassmorphic */}
+            <div className="flex gap-2.5 mb-8 overflow-x-auto no-scrollbar pb-1">
               {[
                 { id: 'upcoming', label: 'Upcoming', icon: Calendar },
                 { id: 'pending', label: 'Pending', icon: Clock, count: pendingBookings.length },
@@ -573,18 +599,18 @@ export function MembershipPass() {
                   key={tab.id}
                   onClick={() => setActiveBookingSubTab(tab.id)}
                   className={`
-                    px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 flex items-center gap-2 whitespace-nowrap
+                    px-6 py-3 rounded-full text-xs font-bold transition-all duration-300 flex items-center gap-2.5 whitespace-nowrap border
                     ${activeBookingSubTab === tab.id 
-                      ? 'bg-[#135bec] text-white shadow-lg shadow-blue-200 scale-105' 
-                      : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-100'}
+                      ? 'bg-white text-gray-900 border-white shadow-lg scale-105' 
+                      : 'bg-white/10 text-white/60 backdrop-blur-md border-white/10 hover:bg-white/20 hover:text-white'}
                   `}
                 >
-                  <tab.icon className="w-3.5 h-3.5" />
+                  <tab.icon className={`w-4 h-4 ${activeBookingSubTab === tab.id ? 'text-gray-900' : 'text-white/40'}`} />
                   {tab.label}
                   {tab.count !== undefined && tab.count > 0 && (
                     <span className={`
-                      ml-1 px-1.5 py-0.5 rounded-full text-[9px] 
-                      ${activeBookingSubTab === tab.id ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600'}
+                      ml-1 px-2 py-0.5 rounded-full text-[10px] 
+                      ${activeBookingSubTab === tab.id ? 'bg-gray-900/10 text-gray-900' : 'bg-white/10 text-white'}
                     `}>
                       {tab.count}
                     </span>
@@ -593,7 +619,7 @@ export function MembershipPass() {
               ))}
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               {activeBookingSubTab === 'upcoming' && (
                 upcomingBookings.length > 0 ? (
                   upcomingBookings.map(booking => (
@@ -612,7 +638,7 @@ export function MembershipPass() {
                   ))
                 ) : (
                   <EmptyState 
-                    icon={<Calendar className="w-16 h-16 text-gray-300" />} 
+                    icon={<Calendar className="w-16 h-16 text-white/20" />} 
                     title="No upcoming bookings" 
                     desc="Ready to plan your next adventure?" 
                     action="Explore Partners"
@@ -644,7 +670,7 @@ export function MembershipPass() {
                   ))
                 ) : (
                   <EmptyState 
-                    icon={<Clock className="w-16 h-16 text-gray-300" />} 
+                    icon={<Clock className="w-16 h-16 text-white/20" />} 
                     title="No pending requests" 
                     desc="All your bookings have been processed."
                   />
@@ -666,7 +692,7 @@ export function MembershipPass() {
                   ))
                 ) : (
                   <EmptyState 
-                    icon={<History className="w-16 h-16 text-gray-300" />} 
+                    icon={<History className="w-16 h-16 text-white/20" />} 
                     title="No booking history" 
                     desc="Your past adventures will appear here."
                   />
@@ -683,10 +709,10 @@ export function MembershipPass() {
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                <div className="w-full border-t border-gray-200" />
+                <div className="w-full border-t border-white/10" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-[#F9FAFB] px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <span className="bg-[#111318] px-4 text-xs font-bold text-white/40 uppercase tracking-wider">
                   Recent Activity
                 </span>
               </div>
@@ -724,14 +750,14 @@ export function MembershipPass() {
 
 function EmptyState({ icon, title, desc, action }: { icon: React.ReactNode, title: string, desc: string, action?: string }) {
   return (
-    <div className="py-16 flex flex-col items-center justify-center text-center bg-gradient-to-br from-white to-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200 animate-in fade-in zoom-in-95 duration-500">
-      <div className="mb-4 p-4 bg-white rounded-full shadow-sm ring-4 ring-gray-50 animate-bounce">
-        {icon}
+    <div className="py-20 flex flex-col items-center justify-center text-center bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 shadow-premium animate-in fade-in zoom-in-95 duration-500">
+      <div className="mb-6 p-5 bg-white/10 rounded-full shadow-2xl ring-8 ring-white/5">
+        {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { className: "w-8 h-8 text-white" }) : icon}
       </div>
-      <h3 className="text-lg font-bold text-slate-900 mb-1">{title}</h3>
-      <p className="text-sm text-slate-500 mb-6 max-w-[200px]">{desc}</p>
+      <h3 className="text-xl font-bold text-white mb-2 tracking-tight">{title}</h3>
+      <p className="text-sm text-white/60 mb-8 max-w-[240px] leading-relaxed">{desc}</p>
       {action && (
-        <Button className="rounded-full bg-gradient-to-r from-[#135bec] to-[#0e45b5] hover:from-[#0e45b5] hover:to-[#0a3696] shadow-lg shadow-blue-200 hover:shadow-xl hover:scale-105 transition-all duration-300">
+        <Button className="rounded-full px-8 bg-white text-gray-900 hover:bg-gray-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold text-xs uppercase tracking-widest h-12">
           {action}
         </Button>
       )}

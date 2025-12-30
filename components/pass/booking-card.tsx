@@ -71,138 +71,150 @@ export function BookingCard({
   }
 
   return (
-    <Card className="overflow-hidden bg-white rounded-[2rem] border border-gray-100 shadow-[0_6px_24px_-2px_rgba(0,0,0,0.12)] transition-all duration-300 hover:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.18)] hover:scale-[1.02] mb-6">
-      <div className="p-5 sm:p-6">
+    <Card className="group relative overflow-hidden bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] mb-6">
+      {/* Status Strip */}
+      <div className={`absolute top-0 left-0 w-1.5 h-full ${statusConfig.className.replace('bg-', 'bg-').split(' ')[0]}`} />
+      
+      <div className="p-6">
+        {/* Header Section */}
         <div className="flex justify-between items-start mb-6">
           <div className="flex gap-4">
-            <div className="relative h-20 w-20 rounded-2xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-inner after:absolute after:inset-0 after:bg-gradient-to-t after:from-black/10 after:to-transparent">
+            <div className="relative h-16 w-16 rounded-2xl overflow-hidden bg-gray-50 shadow-sm ring-1 ring-black/5">
               <Image
                 src={booking.partner?.logo || '/placeholder.jpg'}
                 alt={booking.partner?.name || 'Partner'}
                 fill
-                className="object-cover"
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </div>
             <div>
-              <h3 className="font-bold text-lg text-gray-900 leading-tight mb-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Badge variant="outline" className={`h-5 px-2 rounded-full text-[9px] font-bold uppercase tracking-widest border-0 ${statusConfig.className}`}>
+                  {statusConfig.label}
+                </Badge>
+                <span className="text-[10px] font-mono font-medium text-gray-300">
+                  #{booking.id.slice(0, 8).toUpperCase()}
+                </span>
+              </div>
+              <h3 className="font-bold text-lg text-gray-900 leading-tight tracking-tight">
                 {booking.partner?.name || 'Partner'}
               </h3>
-              <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1.5">
+              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mt-0.5">
                 {booking.partner?.category}
               </p>
-              <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-50 border border-gray-100">
-                <p className="text-[10px] font-mono font-medium text-gray-400">
-                  REF: {booking.id.slice(0, 8).toUpperCase()}
-                </p>
-              </div>
             </div>
           </div>
-          <Badge className={`px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] border backdrop-blur-sm bg-white/90 shadow-lg ${statusConfig.className}`}>
-            <statusConfig.icon className="h-3.5 w-3.5" />
-            {statusConfig.label}
-          </Badge>
         </div>
 
-        <div className="space-y-4 mb-6">
-          <div className="flex items-center gap-3 text-sm font-medium text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
-            <div className="p-2 bg-white rounded-xl shadow-sm">
-              <Calendar className="h-4 w-4 text-[#135bec]" />
+        {/* Info Grid */}
+        <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase tracking-widest text-gray-400 font-semibold">Date & Time</p>
+            <div className="flex items-center gap-2 text-sm font-bold text-gray-900">
+              <Calendar className="w-4 h-4 text-blue-500" />
+              <span className="truncate">{getBookingDetailString()}</span>
             </div>
-            <span>{getBookingDetailString()}</span>
           </div>
-
-          <div className="flex justify-between items-center py-4 px-5 bg-gray-50/80 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-inner">
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Final Amount</span>
-            <div className="text-right">
-              <span className="text-xl font-black text-gray-900 block tracking-tight">₱{booking.final_amount.toLocaleString()}</span>
+          
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase tracking-widest text-gray-400 font-semibold">Amount</p>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-black text-gray-900">₱{booking.final_amount.toLocaleString()}</span>
               {booking.discount_amount > 0 && (
-                <span className="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
-                  Saved ₱{booking.discount_amount.toLocaleString()}
-                </span>
+                <Badge variant="secondary" className="bg-green-50 text-green-600 hover:bg-green-100 text-[10px] px-1.5 h-4">
+                  -₱{booking.discount_amount.toLocaleString()}
+                </Badge>
               )}
             </div>
           </div>
         </div>
 
         {isCounterOffer && (
-          <div className="mb-6 p-5 bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-2xl border-l-4 border-l-blue-500 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <RefreshCw className="w-24 h-24 text-blue-500" />
+          <div className="mb-6 p-5 bg-blue-50/50 rounded-2xl border border-blue-100 relative overflow-hidden group/offer">
+            <div className="absolute -right-4 -top-4 opacity-[0.05] group-hover/offer:opacity-10 transition-opacity">
+              <RefreshCw className="w-24 h-24 text-blue-600" />
             </div>
-            <div className="relative z-10">
-              <div className="flex items-start gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 shadow-sm">
-                  <AlertCircle className="h-4 w-4 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 mb-1">Counter-Offer Received</p>
-                  <p className="text-sm text-blue-900 italic font-medium leading-relaxed">"{booking.counter_offer?.merchant_note}"</p>
-                </div>
+            
+            <div className="flex items-start gap-3 mb-4 relative z-10">
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600">
+                <AlertCircle className="h-4 w-4" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  size="sm"
-                  className="h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-full text-xs font-bold shadow-lg shadow-green-200/50 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
-                  onClick={() => {
-                    if (booking.counter_offer?.id) {
-                      onAcceptCounterOffer?.(booking.id, booking.counter_offer.id)
-                    }
-                  }}
-                  disabled={!booking.counter_offer?.id}
-                >
-                  Accept Offer
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-12 border-2 border-red-200 text-red-600 hover:bg-red-50 rounded-full text-xs font-bold hover:scale-105 active:scale-95 transition-all duration-300"
-                  onClick={() => {
-                    if (booking.counter_offer?.id) {
-                      onDeclineCounterOffer?.(booking.id, booking.counter_offer.id)
-                    }
-                  }}
-                  disabled={!booking.counter_offer?.id}
-                >
-                  Decline
-                </Button>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-blue-600 mb-1">Action Required</p>
+                <p className="text-sm text-gray-700 italic font-medium leading-relaxed">"{booking.counter_offer?.merchant_note}"</p>
               </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3 relative z-10">
+              <Button
+                size="sm"
+                className="h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-bold shadow-lg shadow-blue-200 transition-all hover:scale-[1.02]"
+                onClick={() => {
+                  if (booking.counter_offer?.id) {
+                    onAcceptCounterOffer?.(booking.id, booking.counter_offer.id)
+                  }
+                }}
+              >
+                Accept Offer
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-10 border-gray-200 text-gray-600 hover:bg-gray-50 rounded-full text-xs font-bold transition-all hover:scale-[1.02]"
+                onClick={() => {
+                  if (booking.counter_offer?.id) {
+                    onDeclineCounterOffer?.(booking.id, booking.counter_offer.id)
+                  }
+                }}
+              >
+                Decline
+              </Button>
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-4 gap-3 pt-2">
+        {/* Action Footer */}
+        <div className="flex items-center gap-3 pt-2">
           <Button
-            variant="outline"
-            className="col-span-2 h-12 rounded-full text-xs font-bold border-2 border-gray-100 text-gray-700 hover:bg-gray-50 hover:border-gray-200 hover:scale-[1.02] active:scale-95 transition-all duration-300 group"
+            className="flex-1 h-12 rounded-full bg-gray-900 text-white hover:bg-gray-800 shadow-lg shadow-gray-200 font-semibold text-sm tracking-tight transition-all hover:scale-[1.02] active:scale-95"
             onClick={() => onViewDetails(booking.id)}
           >
             View Details
-            <ChevronRight className="w-3 h-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
           </Button>
-          <Button
-            variant="outline"
-            className="h-12 rounded-full border-2 border-gray-100 text-gray-500 hover:text-[#135bec] hover:border-blue-100 hover:bg-blue-50 hover:rotate-6 active:scale-95 transition-all duration-300"
-            title="Get Directions"
-          >
-            <MapPin className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="outline"
-            className="h-12 rounded-full border-2 border-gray-100 text-gray-500 hover:text-[#135bec] hover:border-blue-100 hover:bg-blue-50 hover:rotate-6 active:scale-95 transition-all duration-300"
-            title="Contact"
-          >
-            <MessageSquare className="h-5 w-5" />
-          </Button>
-          {(booking.status === 'pending' || booking.status === 'confirmed') && (
+          
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-12 w-12 rounded-full border-gray-100 text-gray-500 hover:text-blue-600 hover:border-blue-100 hover:bg-blue-50 transition-all hover:rotate-6"
+              title="Get Directions"
+            >
+              <MapPin className="h-5 w-5" />
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-12 w-12 rounded-full border-gray-100 text-gray-500 hover:text-blue-600 hover:border-blue-100 hover:bg-blue-50 transition-all hover:rotate-6"
+              title="Contact"
+            >
+              <MessageSquare className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Secondary Actions */}
+        {(booking.status === 'pending' || booking.status === 'confirmed') && (
+          <div className="mt-4 pt-4 border-t border-gray-50 flex justify-center">
             <Button
               variant="ghost"
-              className="col-span-4 h-10 mt-1 text-[10px] text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full font-bold uppercase tracking-widest hover:scale-[1.01] active:scale-95 transition-all duration-300"
+              className="h-auto py-1 px-4 text-[10px] text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full font-bold uppercase tracking-widest transition-colors"
               onClick={() => onCancel(booking.id)}
             >
               Cancel Booking
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </Card>
   )

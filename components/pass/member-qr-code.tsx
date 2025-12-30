@@ -7,6 +7,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { User, Booking } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { BFFButton } from "./bff-button"
 
 interface MemberQRCodeProps {
   isOpen: boolean
@@ -137,10 +138,7 @@ export function MemberQRCode({ isOpen, onClose, user, booking }: MemberQRCodePro
                 </div>
               </div>
 
-              {/* Scanner Animation */}
-              <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
-                <div className="w-full h-1 bg-blue-400/50 blur-sm absolute top-0 animate-[scan_3s_ease-in-out_infinite]" />
-              </div>
+              {/* Scanner Animation removed */}
             </div>
 
             {/* Validity Timer */}
@@ -192,7 +190,8 @@ export function MemberQRCode({ isOpen, onClose, user, booking }: MemberQRCodePro
             </div>
 
             {/* Manual Refresh Button */}
-            <button
+            <BFFButton
+              decorativeText="QR"
               onClick={() => {
                 setIsRefreshing(true)
                 const timestamp = Date.now()
@@ -202,11 +201,11 @@ export function MemberQRCode({ isOpen, onClose, user, booking }: MemberQRCodePro
                 setValidity(30)
                 setTimeout(() => setIsRefreshing(false), 200)
               }}
-              className="mt-4 flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white/80 text-xs font-medium transition-colors"
+              className="mt-4 px-6 py-3 text-xs font-medium"
             >
               <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
               Refresh Code
-            </button>
+            </BFFButton>
           </div>
         </div>
       </DialogContent>

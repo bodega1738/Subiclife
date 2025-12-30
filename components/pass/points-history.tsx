@@ -90,10 +90,10 @@ export function PointsHistory({ userId, className }: PointsHistoryProps) {
         {/* Northern Lights glow */}
         <div className="absolute top-0 right-0 w-60 h-60 bg-white/5 rounded-full blur-[80px]" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#135bec]/20 rounded-full blur-[60px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-amber-500/10 rounded-full blur-[50px] animate-pulse" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-amber-500/10 rounded-full blur-[50px]" />
         
         {/* Sparkles Overlay */}
-        <div className="absolute inset-0 bg-[url('/sparkles.svg')] opacity-20 animate-pulse pointer-events-none" />
+        <div className="absolute inset-0 bg-[url('/sparkles.svg')] opacity-20 pointer-events-none" />
 
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-2">
